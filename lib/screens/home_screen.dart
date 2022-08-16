@@ -1,5 +1,6 @@
+import 'package:arisan_digital/screens/create_group_screen.dart';
+import 'package:arisan_digital/screens/members/member_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,11 +21,18 @@ class _HomeScreenState extends State<HomeScreen> {
             SliverAppBar(
                 floating: true,
                 automaticallyImplyLeading: false,
-                elevation: 0.5,
+                elevation: 0,
                 backgroundColor: Colors.blue[700],
                 actions: [
                   IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.account_circle))
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (builder) {
+                          return MemberScreen();
+                        }));
+                      },
+                      icon: Icon(Icons.person_add))
                 ],
                 title: Text('Arisan Digital')),
             SliverList(
@@ -44,18 +52,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                          height: 30,
-                          width: 30,
-                          margin: EdgeInsets.only(left: 15, top: 5),
-                          padding: EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white.withOpacity(0.2)),
-                          child: Icon(
-                            Icons.group_add,
-                            color: Colors.white,
-                          )),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return CreateGroupScreen();
+                          }));
+                        },
+                        child: Container(
+                            height: 30,
+                            width: 30,
+                            margin: EdgeInsets.only(left: 15, top: 5),
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors.blue[700]),
+                            child: Icon(
+                              Icons.group_add,
+                              color: Colors.white,
+                            )),
+                      ),
                       Expanded(
                         child: Container(
                           margin: EdgeInsets.only(top: 5),
@@ -167,11 +184,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                        Row(
-                          children: [
-                            Text('Lihat Semua'),
-                            Icon(Icons.chevron_right)
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (builder) {
+                              return MemberScreen();
+                            }));
+                          },
+                          child: Row(
+                            children: [
+                              Text('Lihat Semua'),
+                              Icon(Icons.chevron_right)
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -341,39 +366,64 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     ],
                     color: Colors.white),
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                        child: Column(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Tanggal Kocok Arisan',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
+                        Expanded(
+                            child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '26 August 2022',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              'Tanggal Kocok Arisan',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '26 August 2022',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
                             ),
                           ],
-                        ),
+                        )),
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                          child: Icon(
+                            Icons.edit_calendar,
+                            color: Colors.grey,
+                          ),
+                        )
                       ],
-                    )),
+                    ),
                     Container(
-                      padding: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                      child: Icon(
-                        Icons.edit_calendar,
-                        color: Colors.grey,
-                      ),
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white,
+                            onPrimary: Colors.lightBlue[700],
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                                side: BorderSide(
+                                    color: Colors.lightBlue.shade800)),
+                          ),
+                          onPressed: () {},
+                          child: Text('Lihat Riwayat')),
                     )
                   ],
                 ),
@@ -442,18 +492,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
                     onPressed: () {},
-                    child: Text('Kocok Arisan Sekarang!')),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text('Kocok Arisan Sekarang!'),
+                    )),
               )
             ])),
             SliverList(delegate: SliverChildListDelegate([])),
             SliverList(
                 delegate: SliverChildListDelegate([
               SizedBox(
-                height: 100,
+                height: 50,
               )
             ])),
           ]),

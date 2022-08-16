@@ -66,6 +66,7 @@ flutter:
     - assets/images/icons/google.png
     - assets/images/icons/man.png
     - assets/images/icons/woman.png
+    - assets/images/world-group.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
