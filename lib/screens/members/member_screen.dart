@@ -1,4 +1,4 @@
-import 'package:arisan_digital/screens/members/create_member_screen.dart';
+import 'package:arisan_digital/screens/members/contact_screen.dart';
 import 'package:flutter/material.dart';
 
 class MemberScreen extends StatefulWidget {
@@ -25,78 +25,7 @@ class _MemberScreenState extends State<MemberScreen> {
             actions: [
               IconButton(
                   onPressed: () {
-                    showModalBottomSheet<void>(
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Container(
-                          height: 500,
-                          padding: EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(15),
-                                  topRight: Radius.circular(15))),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Tambah Anggota',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w500),
-                              ),
-                              Text(
-                                'Masukkan data anggota arisan.',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              Container(
-                                  margin: EdgeInsets.only(left: 5, right: 5),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        labelStyle: TextStyle(fontSize: 14),
-                                        labelText: "Nama Anggota"),
-                                  )),
-                              Container(
-                                  margin: EdgeInsets.only(left: 5, right: 5),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        helperText:
-                                            "* Notifikasi akan dikirimkan melalui email.",
-                                        labelStyle: TextStyle(fontSize: 14),
-                                        labelText: "Email (Opsional)"),
-                                  )),
-                              Container(
-                                  margin: EdgeInsets.only(left: 5, right: 5),
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                        labelStyle: TextStyle(fontSize: 14),
-                                        labelText: "No Telp"),
-                                  )),
-                              Container(
-                                  margin: EdgeInsets.symmetric(vertical: 15),
-                                  child: Center(child: const Text('Atau'))),
-                              Container(
-                                // margin: EdgeInsets.all(15),
-                                width: MediaQuery.of(context).size.width,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                  ),
-                                  child: const Text('Tambahkan dari Contact'),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (builder) {
-                    //   return CreateMemberScreen();
-                    // }));
+                    createMemberModal(context);
                   },
                   icon: Icon(Icons.add)),
             ],
@@ -112,7 +41,6 @@ class _MemberScreenState extends State<MemberScreen> {
                 return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   child: Row(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Stack(
                         children: [
@@ -174,6 +102,104 @@ class _MemberScreenState extends State<MemberScreen> {
         ])),
         SliverList(delegate: SliverChildListDelegate([])),
       ]),
+    );
+  }
+
+  Future<void> createMemberModal(BuildContext context) {
+    return showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15), topRight: Radius.circular(15))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Tambah Anggota',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                'Masukkan data anggota arisan.',
+                style: TextStyle(fontSize: 14),
+              ),
+              Container(
+                  margin: EdgeInsets.only(left: 5, right: 5),
+                  child: TextField(
+                    decoration: InputDecoration(
+                        labelStyle: TextStyle(fontSize: 14),
+                        labelText: "Nama Anggota"),
+                  )),
+              Container(
+                  margin: EdgeInsets.only(left: 5, right: 5),
+                  child: TextField(
+                    decoration: InputDecoration(
+                        helperText:
+                            "* Notifikasi akan dikirimkan melalui email.",
+                        labelStyle: TextStyle(fontSize: 14),
+                        labelText: "Email (Opsional)"),
+                  )),
+              Container(
+                  margin: EdgeInsets.only(left: 5, right: 5),
+                  child: TextField(
+                    decoration: InputDecoration(
+                        labelStyle: TextStyle(fontSize: 14),
+                        labelText: "No Telp"),
+                  )),
+              SizedBox(
+                height: 25,
+              ),
+              Container(
+                // margin: EdgeInsets.all(15),
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: const Text('Simpan'),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (builder) {
+                      return ContactScreen();
+                    }));
+                  },
+                ),
+              ),
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 15),
+                  child: Center(child: const Text('Atau'))),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.lightBlue[700],
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        side: BorderSide(color: Colors.lightBlue.shade800)),
+                  ),
+                  child: const Text('Tambahkan dari Contact'),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (builder) {
+                      return ContactScreen();
+                    }));
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }

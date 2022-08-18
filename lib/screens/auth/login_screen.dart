@@ -61,11 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: Colors.white,
-                        onPrimary: Colors.lightBlue[700],
+                        onPrimary: Colors.lightBlue.shade900,
                         shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            side: BorderSide(color: Colors.grey.shade800)),
+                            side: BorderSide(color: Colors.lightBlue.shade900)),
                       ),
                       onPressed: () {
                         Navigator.push(context,
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Text(
                               'Sign in by Google',
                               style: TextStyle(
-                                  color: Colors.grey.shade800,
+                                  color: Colors.lightBlue.shade900,
                                   fontWeight: FontWeight.bold),
                             ),
                           ],

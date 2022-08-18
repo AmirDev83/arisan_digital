@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
   introduction_screen: ^3.0.2
+  percent_indicator: ^4.2.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -66,6 +67,8 @@ flutter:
     - assets/images/icons/google.png
     - assets/images/icons/man.png
     - assets/images/icons/woman.png
+    - assets/images/icons/reward.png
+    - assets/images/icons/shuffle.png
     - assets/images/world-group.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

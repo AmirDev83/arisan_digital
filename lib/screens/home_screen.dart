@@ -1,5 +1,7 @@
 import 'package:arisan_digital/screens/create_group_screen.dart';
+import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/members/member_screen.dart';
+import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -422,7 +424,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 side: BorderSide(
                                     color: Colors.lightBlue.shade800)),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (builder) {
+                              return HistoryScreen();
+                            }));
+                          },
                           child: Text('Lihat Riwayat')),
                     )
                   ],
@@ -495,7 +502,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (builder) {
+                        return ShuffleScreen();
+                      }));
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Text('Kocok Arisan Sekarang!'),
