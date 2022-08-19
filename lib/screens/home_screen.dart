@@ -1,3 +1,4 @@
+import 'package:arisan_digital/screens/about_screen.dart';
 import 'package:arisan_digital/screens/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/members/member_screen.dart';
@@ -26,7 +27,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 elevation: 0,
                 backgroundColor: Colors.blue[700],
                 actions: [
-                  IconButton(onPressed: () {}, icon: Icon(Icons.settings)),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (builder) {
+                          return AboutScreen();
+                        }));
+                      },
+                      icon: Icon(Icons.settings)),
                   IconButton(
                       onPressed: () {
                         Navigator.push(context,
@@ -218,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                               child: Text(
-                            'Roziq Alwi',
+                            'Anastasya R.',
                             style: TextStyle(fontSize: 13),
                           )),
                           Text(
@@ -242,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Expanded(
                               child: Text(
-                            'Zakia Fhadillah',
+                            'Budi Raharjo',
                             style: TextStyle(fontSize: 13),
                           )),
                           Text(
