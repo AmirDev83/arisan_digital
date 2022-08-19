@@ -2,6 +2,7 @@ import 'package:arisan_digital/screens/about_screen.dart';
 import 'package:arisan_digital/screens/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/members/member_screen.dart';
+import 'package:arisan_digital/screens/setting_screen.dart';
 import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (builder) {
-                          return AboutScreen();
+                          return SettingScreen();
                         }));
                       },
                       icon: Icon(Icons.settings)),
