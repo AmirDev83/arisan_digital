@@ -1,11 +1,22 @@
+import 'dart:io';
+
 import 'package:arisan_digital/screens/onboarding_screen.dart';
+import 'package:arisan_digital/utils/http_overrides.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
+
+  // Inisial http method untuk Android versi 6 atau kebawah
+  HttpOverrides.global = MyHttpOverrides();
+
+  await dotenv.load(fileName: ".env");
+
   runApp(const MyApp());
 }
 

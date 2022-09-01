@@ -1,15 +1,15 @@
 import 'package:arisan_digital/models/member_model.dart';
 
-class ArisanHistory {
+class ArisanHistoryModel {
   int? id, date, notes;
   MemberModel? winner;
   List<ArisanHistoryDetail>? arisanHistoryDetails;
 
-  ArisanHistory(
+  ArisanHistoryModel(
       {this.id, this.date, this.notes, this.winner, this.arisanHistoryDetails});
 
-  factory ArisanHistory.fromJson(Map<String, dynamic> json) {
-    return ArisanHistory(
+  factory ArisanHistoryModel.fromJson(Map<String, dynamic> json) {
+    return ArisanHistoryModel(
         id: json['id'],
         date: json['date'],
         notes: json['notes'],

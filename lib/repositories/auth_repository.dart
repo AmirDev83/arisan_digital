@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:arisan_digital/models/user_model.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
-  final _baseURL = "";
+  final _baseURL = dotenv.env['BASE_URL'].toString();
 
   Future login({String? email, String? name, int? googleId}) async {
     try {

@@ -28,3 +28,5 @@ class GroupModel {
         createdAt: json['created_at']);
   }
 }
+
+enum StatusGroup { active, inactive }
