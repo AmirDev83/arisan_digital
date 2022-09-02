@@ -5,9 +5,11 @@ import 'package:arisan_digital/screens/members/member_screen.dart';
 import 'package:arisan_digital/screens/setting_screen.dart';
 import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final GoogleSignIn? googleSignIn;
+  const HomeScreen({Key? key, this.googleSignIn}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -30,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                   IconButton(
                       onPressed: () {
+                        widget.googleSignIn!.signOut();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (builder) {
                           return SettingScreen();

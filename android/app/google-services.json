@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "697471599644",
+    "project_id": "arisan-digital-690b7",
+    "storage_bucket": "arisan-digital-690b7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:697471599644:android:b79e2084ed3b4ab4a60bd9",
+        "android_client_info": {
+          "package_name": "com.caraguna.arisan.digital"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "697471599644-infgsgsldouffmi99a957u75iss2cjna.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.caraguna.arisan.digital",
+            "certificate_hash": "b77cb3398d223b105f612422b6d2a842d7c1dd3b"
+          }
+        },
+        {
+          "client_id": "697471599644-40avfgc3kg9vuj7rjnp5ol9vq72otgjc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkdFYfmNJoXV1ak83XfZWB8MlHgjA0xEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "697471599644-40avfgc3kg9vuj7rjnp5ol9vq72otgjc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

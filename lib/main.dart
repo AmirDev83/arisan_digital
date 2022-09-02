@@ -1,10 +1,15 @@
 import 'dart:io';
 
 import 'package:arisan_digital/screens/onboarding_screen.dart';
+import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/http_overrides.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+int introduction = 0;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +22,22 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
+  await initIntroduction();
+
   runApp(const MyApp());
+}
+
+Future initIntroduction() async {
+  final prefs = await SharedPreferences.getInstance();
+  int? intro = prefs.getInt('introduction');
+  if (kDebugMode) {
+    print('intro = $intro');
+  }
+
+  if (intro != null && intro == 1) {
+    return introduction = 1;
+  }
+  prefs.setInt('introduction', 1);
 }
 
 class MyApp extends StatelessWidget {
@@ -30,7 +50,8 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: const OnboardingScreen(),
+      home:
+          introduction != 0 ? const OnboardingScreen() : const StartingScreen(),
       // home: const MyHomePage(title: 'Arisan Digital'),
     );
   }
