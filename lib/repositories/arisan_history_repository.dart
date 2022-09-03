@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:arisan_digital/models/arisan_history_model.dart';
-import 'package:arisan_digital/models/member_model.dart';
 import 'package:arisan_digital/models/response_model.dart';
 import 'package:arisan_digital/repositories/auth_repository.dart';
 import 'package:flutter/foundation.dart';

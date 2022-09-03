@@ -34,9 +34,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       globalBackgroundColor: Colors.white,
       pages: [
         PageViewModel(
-          title: "Dompet Saku",
-          body:
-              "Membantu kamu mencatat pemasukan dan pengeluaran keuangan harian.",
+          title: "Arisan Digital",
+          body: "Aplikasi untuk mengelola arisan grub kamu lebih keren.",
           image: Image.asset(
             'assets/images/onboarding/group.png',
             width: 240,
@@ -44,9 +43,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Ngga Ribet",
-          body:
-              "Atur keuangan harianmu dengan mudah dan ngga ribet bikin rencana keuangan.",
+          title: "Anggota Arisan",
+          body: "Kelola anggota arisan grub jadi lebih ringkas.",
           image: Image.asset(
             'assets/images/onboarding/member.png',
             width: 235,
@@ -54,9 +52,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Makin Hemat",
-          body:
-              "Membuatmu semakin hemat, mengelola pengeluaran secara terstruktur.",
+          title: "Reward Arisan",
+          body: "Tentukan pemenang arisan grub kamu dengan mudah dan cepat.",
           image: Image.asset(
             'assets/images/onboarding/reward.png',
             width: 220,
@@ -66,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               _onIntroEnd(context);
             },
             child: const Text(
-              'Ayo Mulai !!',
+              'Mulai Sekarang',
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
