@@ -34,9 +34,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       globalBackgroundColor: Colors.white,
       pages: [
         PageViewModel(
-          title: "Dompet Saku",
+          title: "Arisan Digital",
           body:
-              "Membantu kamu mencatat pemasukan dan pengeluaran keuangan harian.",
+              "Yuk, mulai arisan kamu sekarang juga.",
           image: Image.asset(
             'assets/images/onboarding/group.png',
             width: 240,
@@ -44,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-          title: "Ngga Ribet",
+          title: "Ngga ribet",
           body:
               "Atur keuangan harianmu dengan mudah dan ngga ribet bikin rencana keuangan.",
           image: Image.asset(
