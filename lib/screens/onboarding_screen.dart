@@ -35,12 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       pages: [
         PageViewModel(
           title: "Arisan Digital",
-<<<<<<< HEAD
-          body:
-              "Yuk, mulai arisan kamu sekarang juga.",
-=======
           body: "Aplikasi untuk mengelola arisan grub kamu lebih keren.",
->>>>>>> 5ef979d298c0587317c10839d14aa72f057abee4
           image: Image.asset(
             'assets/images/onboarding/group.png',
             width: 240,
@@ -48,14 +43,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           decoration: pageDecoration,
         ),
         PageViewModel(
-<<<<<<< HEAD
-          title: "Ngga ribet",
-          body:
-              "Atur keuangan harianmu dengan mudah dan ngga ribet bikin rencana keuangan.",
-=======
           title: "Anggota Arisan",
           body: "Kelola anggota arisan grub jadi lebih ringkas.",
->>>>>>> 5ef979d298c0587317c10839d14aa72f057abee4
           image: Image.asset(
             'assets/images/onboarding/member.png',
             width: 235,
