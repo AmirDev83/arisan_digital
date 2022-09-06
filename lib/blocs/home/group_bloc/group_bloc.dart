@@ -15,6 +15,9 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
 
   Future<void> _onGroupFetched(
       GroupFetched event, Emitter<GroupState> emit) async {
+    if (event.isRefresh) {
+      emit(state.copyWith(hasReachedMax: false, status: GroupStatus.initial));
+    }
     if (state.hasReachedMax) return;
     try {
       if (state.status == GroupStatus.initial) {

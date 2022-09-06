@@ -1,5 +1,5 @@
 import 'package:arisan_digital/repositories/auth_repository.dart';
-import 'package:arisan_digital/screens/home_screen.dart';
+import 'package:arisan_digital/screens/home/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -47,9 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (token != null) {
           context.loaderOverlay.hide();
           Navigator.push(context, MaterialPageRoute(builder: (builder) {
-            return HomeScreen(
-              googleSignIn: _googleSignIn,
-            );
+            return HomeScreen();
           }));
         }
       }

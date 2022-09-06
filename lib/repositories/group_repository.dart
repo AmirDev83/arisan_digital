@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
 import 'package:arisan_digital/models/response_model.dart';
-import 'package:arisan_digital/models/user_model.dart';
 import 'package:arisan_digital/repositories/auth_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -28,8 +27,6 @@ class GroupRepository {
         'Authorization': 'Bearer $_token',
         'Accept': 'application/json'
       });
-
-      print(response.body);
 
       if (response.statusCode == 200) {
         Iterable iterable = json.decode(response.body)['data'];
@@ -97,13 +94,14 @@ class GroupRepository {
           },
           body: json.encode({
             'name': group.name,
-            'periods_type': group.periodsType,
+            'periods_type': periodsTypeEn(group.periodsType ?? ''),
             'periods_date': group.periodsDate,
             'dues': group.dues,
-            'target': group.target,
-            'notes': group.notes,
+            'target': group.target ?? '',
+            // 'notes': group.notes,
           }));
 
+      print(response.body);
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
@@ -114,6 +112,17 @@ class GroupRepository {
       }
     }
     return null;
+  }
+
+  String periodsTypeEn(String periodsType) {
+    if (periodsType.toLowerCase() == 'mingguan') {
+      return 'weekly';
+    } else if (periodsType.toLowerCase() == 'bulanan') {
+      return 'monthly';
+    } else if (periodsType.toLowerCase() == 'tahunan') {
+      return 'annual';
+    }
+    return 'monthly';
   }
 
   Future<ResponseModel?> updateGroup(GroupModel group) async {

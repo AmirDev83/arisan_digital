@@ -18,6 +18,9 @@ class UserRepository {
   Future<UserModel?> user() async {
     try {
       await getToken();
+      if (kDebugMode) {
+        print('Token : $_token');
+      }
       var response = await http.get(Uri.parse('$_baseURL/user'), headers: {
         'Authorization': 'Bearer $_token',
         'Accept': 'application/json'

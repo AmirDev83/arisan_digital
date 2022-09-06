@@ -7,4 +7,11 @@ abstract class GroupEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GroupFetched extends GroupEvent {}
+class GroupFetched extends GroupEvent {
+  const GroupFetched({this.isRefresh = false});
+
+  final bool isRefresh;
+
+  @override
+  List<Object> get props => [isRefresh];
+}
