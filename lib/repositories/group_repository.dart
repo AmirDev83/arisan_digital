@@ -22,13 +22,14 @@ class GroupRepository {
     _token = await _authRepo.getToken();
   }
 
-  Future<List<GroupModel>?> getGroups(UserModel user) async {
+  Future<List<GroupModel>?> getGroups() async {
     try {
-      final response = await http.get(Uri.parse('$_baseURL/groups/${user.id}'),
-          headers: {
-            'Authorization': 'Bearer $_token',
-            'Accept': 'application/json'
-          });
+      final response = await http.get(Uri.parse('$_baseURL/groups'), headers: {
+        'Authorization': 'Bearer $_token',
+        'Accept': 'application/json'
+      });
+
+      print(response.body);
 
       if (response.statusCode == 200) {
         Iterable iterable = json.decode(response.body)['data'];

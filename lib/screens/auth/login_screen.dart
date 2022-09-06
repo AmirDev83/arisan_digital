@@ -1,3 +1,4 @@
+import 'package:arisan_digital/repositories/auth_repository.dart';
 import 'package:arisan_digital/screens/home_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   GoogleSignInAccount? _currentUser;
+  AuthRepository _authRepo = AuthRepository();
 
   @override
   void initState() {
@@ -38,13 +40,18 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       _currentUser = await _googleSignIn.signIn();
       if (_currentUser != null) {
-        print('Login Info : ' + _currentUser!.displayName!);
-        context.loaderOverlay.hide();
-        Navigator.push(context, MaterialPageRoute(builder: (builder) {
-          return HomeScreen(
-            googleSignIn: _googleSignIn,
-          );
-        }));
+        String? token = await _authRepo.login(
+            email: _currentUser?.email,
+            name: _currentUser?.displayName,
+            googleId: _currentUser?.id);
+        if (token != null) {
+          context.loaderOverlay.hide();
+          Navigator.push(context, MaterialPageRoute(builder: (builder) {
+            return HomeScreen(
+              googleSignIn: _googleSignIn,
+            );
+          }));
+        }
       }
     } catch (error) {
       if (kDebugMode) {
@@ -73,10 +80,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       backgroundColor: Colors.white,
       body: LoaderOverlay(
+        useDefaultLoading: false,
         overlayWidget: Center(
-          child: LoadingAnimationWidget.bouncingBall(
+          child: LoadingAnimationWidget.waveDots(
             color: Colors.white,
-            size: 200,
+            size: 70,
           ),
         ),
         child: Container(

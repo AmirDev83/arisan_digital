@@ -1,13 +1,5 @@
 import 'package:arisan_digital/screens/about_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: [
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
 
 class SettingScreen extends StatelessWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -43,7 +35,7 @@ class SettingScreen extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    _googleSignIn.signOut();
+                    // _googleSignIn.signOut();
                     print('keluar');
                   },
                   trailing: Icon(Icons.chevron_right),

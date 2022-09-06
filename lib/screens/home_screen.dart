@@ -1,3 +1,5 @@
+import 'package:arisan_digital/models/user_model.dart';
+import 'package:arisan_digital/repositories/user_repository.dart';
 import 'package:arisan_digital/screens/about_screen.dart';
 import 'package:arisan_digital/screens/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
@@ -16,7 +18,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final UserRepository _userRepo = UserRepository();
   List<String> groups = ["Kantor", "Keluarga", "Teman"];
+
+  UserModel? user;
+
+  Future getUser() async {
+    user = await _userRepo.user();
+    if (user != null) {
+      print(user.toString());
+    }
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                   IconButton(
                       onPressed: () {
-                        widget.googleSignIn!.signOut();
+                        // widget.googleSignIn!.signOut();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (builder) {
                           return SettingScreen();
