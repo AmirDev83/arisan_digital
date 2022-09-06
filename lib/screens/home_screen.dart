@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 actions: [
                   IconButton(
                       onPressed: () {
-                        widget.googleSignIn!.signOut();
+                        // widget.googleSignIn!.signOut();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (builder) {
                           return SettingScreen();
