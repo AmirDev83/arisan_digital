@@ -1,11 +1,10 @@
 import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
-import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/screens/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/home/widgets/group_item.dart';
 import 'package:arisan_digital/screens/home/widgets/shimmer_group.dart';
 import 'package:arisan_digital/screens/members/member_screen.dart';
-import 'package:arisan_digital/screens/setting_screen.dart';
+import 'package:arisan_digital/screens/settings/setting_screen.dart';
 import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    context.read<GroupBloc>().add(const GroupFetched());
+    context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
     super.initState();
   }
 

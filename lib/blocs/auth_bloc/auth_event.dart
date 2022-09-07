@@ -8,3 +8,5 @@ abstract class AuthEvent extends Equatable {
 }
 
 class AuthUserFetched extends AuthEvent {}
+
+class AuthOnLogout extends AuthEvent {}

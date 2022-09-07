@@ -46,9 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
             googleId: _currentUser?.id);
         if (token != null) {
           context.loaderOverlay.hide();
-          Navigator.push(context, MaterialPageRoute(builder: (builder) {
-            return HomeScreen();
-          }));
+          routeHomeScreen();
+          // Navigator.push(context, MaterialPageRoute(builder: (builder) {
+          //   return HomeScreen();
+          // }));
         }
       }
     } catch (error) {
@@ -57,6 +58,15 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
     context.loaderOverlay.hide();
+  }
+
+  void routeHomeScreen() {
+    Navigator.pushAndRemoveUntil<void>(
+      context,
+      MaterialPageRoute<void>(
+          builder: (BuildContext context) => const HomeScreen()),
+      ModalRoute.withName('/home-screen'),
+    );
   }
 
   @override

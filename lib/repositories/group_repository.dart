@@ -13,16 +13,13 @@ class GroupRepository {
   final AuthRepository _authRepo = AuthRepository();
   String? _token;
 
-  GroupRepository() {
-    getToken();
-  }
-
   Future getToken() async {
     _token = await _authRepo.getToken();
   }
 
   Future<List<GroupModel>?> getGroups() async {
     try {
+      await getToken();
       final response = await http.get(Uri.parse('$_baseURL/groups'), headers: {
         'Authorization': 'Bearer $_token',
         'Accept': 'application/json'
@@ -44,6 +41,7 @@ class GroupRepository {
 
   Future<List<MemberModel>?> getMemberGroups(int id) async {
     try {
+      await getToken();
       final response = await http.get(Uri.parse('$_baseURL/group/members/$id'),
           headers: {
             'Authorization': 'Bearer $_token',
@@ -66,6 +64,7 @@ class GroupRepository {
 
   Future<GroupModel?> showGroup(int id) async {
     try {
+      await getToken();
       final response = await http.get(Uri.parse('$_baseURL/group/$id'),
           headers: {
             'Authorization': 'Bearer $_token',
@@ -86,6 +85,7 @@ class GroupRepository {
 
   Future<ResponseModel?> createGroup(GroupModel group) async {
     try {
+      await getToken();
       final response = await http.post(Uri.parse('$_baseURL/group/store'),
           headers: {
             'Authorization': 'Bearer $_token',
@@ -101,7 +101,6 @@ class GroupRepository {
             // 'notes': group.notes,
           }));
 
-      print(response.body);
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
@@ -127,6 +126,7 @@ class GroupRepository {
 
   Future<ResponseModel?> updateGroup(GroupModel group) async {
     try {
+      await getToken();
       final response =
           await http.patch(Uri.parse('$_baseURL/group/update/${group.id}'),
               headers: {
@@ -159,6 +159,7 @@ class GroupRepository {
   Future<ResponseModel?> updateStatusGroup(int id,
       {StatusGroup? status = StatusGroup.active}) async {
     try {
+      await getToken();
       final response =
           await http.patch(Uri.parse('$_baseURL/group/update/status/$id'),
               headers: {
@@ -185,6 +186,7 @@ class GroupRepository {
 
   Future<ResponseModel?> updateNotesGroup(int id, {String? notes}) async {
     try {
+      await getToken();
       final response =
           await http.patch(Uri.parse('$_baseURL/group/update/notes/$id'),
               headers: {
@@ -211,6 +213,7 @@ class GroupRepository {
 
   Future<ResponseModel?> deleteGroup(int id) async {
     try {
+      await getToken();
       final response = await http
           .delete(Uri.parse('$_baseURL/group/delete/$id'), headers: {
         'Authorization': 'Bearer $_token',

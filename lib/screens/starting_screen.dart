@@ -14,6 +14,15 @@ class StartingScreen extends StatefulWidget {
 }
 
 class _StartingScreenState extends State<StartingScreen> {
+  void routeHomeScreen() {
+    Navigator.pushAndRemoveUntil<void>(
+      context,
+      MaterialPageRoute<void>(
+          builder: (BuildContext context) => const HomeScreen()),
+      ModalRoute.withName('/home-screen'),
+    );
+  }
+
   @override
   void initState() {
     // context.loaderOverlay.show();
@@ -32,9 +41,10 @@ class _StartingScreenState extends State<StartingScreen> {
           } else if (state is AuthUser) {
             context.loaderOverlay.hide();
             if (state.authStatus == AuthStatus.authenticated) {
-              Navigator.push(context, MaterialPageRoute(builder: (builder) {
-                return const HomeScreen();
-              }));
+              routeHomeScreen();
+              // Navigator.push(context, MaterialPageRoute(builder: (builder) {
+              //   return const HomeScreen();
+              // }));
             }
           } else {
             // Show a snackbar

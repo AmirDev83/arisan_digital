@@ -17,9 +17,23 @@ class AuthUser extends AuthState {
   final AuthStatus authStatus;
 
   AuthUser copyWith({UserModel? user, AuthStatus? authStatus}) {
-    return AuthUser(user: this.user, authStatus: this.authStatus);
+    return AuthUser(
+        user: user ?? this.user, authStatus: authStatus ?? this.authStatus);
   }
 
   @override
-  List<Object> get props => [user!, authStatus];
+  List<Object> get props => [authStatus];
+}
+
+class AuthLogout extends AuthState {
+  const AuthLogout({this.authStatus = AuthStatus.authenticated});
+
+  final AuthStatus authStatus;
+
+  AuthLogout copyWith({AuthStatus? authStatus}) {
+    return AuthLogout(authStatus: authStatus ?? this.authStatus);
+  }
+
+  @override
+  List<Object> get props => [authStatus];
 }

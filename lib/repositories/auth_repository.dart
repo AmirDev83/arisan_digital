@@ -2,11 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+final GoogleSignIn _googleSignIn = GoogleSignIn(
+  scopes: [
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly',
+  ],
+);
+
 class AuthRepository {
   final _baseURL = dotenv.env['BASE_URL'].toString();
+  String? _token;
 
   Future<String?> login({String? email, String? name, String? googleId}) async {
     try {
@@ -33,19 +42,20 @@ class AuthRepository {
     return null;
   }
 
-  Future logout(String token) async {
+  Future logout() async {
     try {
+      await getToken();
       var response = await http.post(Uri.parse('$_baseURL/logout'), headers: {
-        'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $_token',
         'Accept': 'application/json'
       });
 
       // Error handling
       if (response.statusCode == 200) {
+        await _googleSignIn.signOut();
+        await removeToken();
         var jsonResponse = json.decode(response.body);
         return jsonResponse;
-      } else {
-        throw Exception('Koneksi dengan server bermasalah');
       }
     } catch (e) {
       return e.toString();
@@ -54,7 +64,8 @@ class AuthRepository {
 
   Future<String?> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("token");
+    _token = prefs.getString("token");
+    return _token;
   }
 
   Future setToken(String token) async {
