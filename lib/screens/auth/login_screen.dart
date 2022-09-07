@@ -43,13 +43,11 @@ class _LoginScreenState extends State<LoginScreen> {
         String? token = await _authRepo.login(
             email: _currentUser?.email,
             name: _currentUser?.displayName,
+            photoUrl: _currentUser?.photoUrl,
             googleId: _currentUser?.id);
         if (token != null) {
           context.loaderOverlay.hide();
           routeHomeScreen();
-          // Navigator.push(context, MaterialPageRoute(builder: (builder) {
-          //   return HomeScreen();
-          // }));
         }
       }
     } catch (error) {

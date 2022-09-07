@@ -17,11 +17,13 @@ class AuthRepository {
   final _baseURL = dotenv.env['BASE_URL'].toString();
   String? _token;
 
-  Future<String?> login({String? email, String? name, String? googleId}) async {
+  Future<String?> login(
+      {String? email, String? name, String? photoUrl, String? googleId}) async {
     try {
       final response = await http.post(Uri.parse('$_baseURL/login'), body: {
         'email': email,
         'name': name,
+        'photo_url': photoUrl,
         'google_id': googleId,
         'device_name': 'mobile'
       });

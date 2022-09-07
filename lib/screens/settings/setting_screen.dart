@@ -3,16 +3,8 @@ import 'package:arisan_digital/screens/settings/about_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-
-// final GoogleSignIn _googleSignIn = GoogleSignIn(
-//   scopes: [
-//     'email',
-//     'https://www.googleapis.com/auth/contacts.readonly',
-//   ],
-// );
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -22,6 +14,12 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  @override
+  void initState() {
+    context.read<AuthBloc>().add(AuthUserFetched());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
@@ -38,11 +36,14 @@ class _SettingScreenState extends State<SettingScreen> {
               ModalRoute.withName('/starting-screen'),
             );
           }
+        } else {
+          context.loaderOverlay.hide();
         }
       },
       child: LoaderOverlay(
         useDefaultLoading: false,
-        overlayOpacity: 0.6,
+        overlayColor: Colors.blue.shade700,
+        overlayOpacity: 1,
         overlayWidget: Center(
           child: LoadingAnimationWidget.waveDots(
             color: Colors.white,
@@ -69,6 +70,31 @@ class _SettingScreenState extends State<SettingScreen> {
                   Container(
                     child: Column(
                       children: [
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            if (state is AuthUser) {
+                              if (state.authStatus ==
+                                  AuthStatus.authenticated) {
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            state.user?.photoUrl ?? '',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )),
+                                  ),
+                                  title: Text(state.user?.name ?? ''),
+                                  subtitle: Text(state.user?.email ?? ''),
+                                );
+                              }
+                            }
+                            return Container();
+                          },
+                        ),
                         ListTile(
                           onTap: () {
                             Navigator.push(context,
