@@ -1,7 +1,7 @@
 import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/screens/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
-import 'package:arisan_digital/screens/home/widgets/group_item.dart';
+import 'package:arisan_digital/screens/home/widgets/group_list.dart';
 import 'package:arisan_digital/screens/home/widgets/shimmer_group.dart';
 import 'package:arisan_digital/screens/members/member_screen.dart';
 import 'package:arisan_digital/screens/settings/setting_screen.dart';
@@ -123,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               );
                             }
-                            return GroupItem(
+                            return GroupList(
                               groups: state.groups,
                             );
                           },

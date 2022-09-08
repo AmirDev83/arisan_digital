@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:arisan_digital/blocs/auth_bloc/auth_bloc.dart';
 import 'package:arisan_digital/blocs/groups/create_group_cubit/create_group_cubit.dart';
 import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
+import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
 import 'package:arisan_digital/screens/onboarding_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/http_overrides.dart';
@@ -59,6 +60,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CreateGroupCubit(),
+        ),
+        BlocProvider(
+          create: (context) => SelectedGroupCubit(),
         ),
       ],
       child: MaterialApp(
