@@ -1,45 +1,75 @@
 import 'package:arisan_digital/blocs/auth_bloc/auth_bloc.dart';
+import 'package:arisan_digital/blocs/groups/delete_group_cubit/delete_group_cubit.dart';
+import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
+import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
+import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/screens/settings/about_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
+import 'package:arisan_digital/utils/custom_snackbar.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SettingScreen extends StatefulWidget {
-  const SettingScreen({Key? key}) : super(key: key);
+  final GroupModel? group;
+  const SettingScreen({Key? key, this.group}) : super(key: key);
 
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  GroupModel? group;
+
   @override
   void initState() {
     context.read<AuthBloc>().add(AuthUserFetched());
+    group = widget.group;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthLoading) {
-          context.loaderOverlay.show();
-        } else if (state is AuthLogout) {
-          context.loaderOverlay.hide();
-          if (state.authStatus == AuthStatus.unauthenticated) {
-            Navigator.pushAndRemoveUntil<void>(
-              context,
-              MaterialPageRoute<void>(
-                  builder: (BuildContext context) => const StartingScreen()),
-              ModalRoute.withName('/starting-screen'),
-            );
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthLoading) {
+              context.loaderOverlay.show();
+            } else if (state is AuthLogout) {
+              context.loaderOverlay.hide();
+              if (state.authStatus == AuthStatus.unauthenticated) {
+                Navigator.pushAndRemoveUntil<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                      builder: (BuildContext context) =>
+                          const StartingScreen()),
+                  ModalRoute.withName('/starting-screen'),
+                );
+              }
+            } else {
+              context.loaderOverlay.hide();
+            }
+          },
+        ),
+        BlocListener<DeleteGroupCubit, DeleteGroupState>(
+            listener: (context, state) {
+          if (state.status == DeleteGroupStatus.loading) {
+            context.loaderOverlay.show();
+          } else if (state.status == DeleteGroupStatus.success) {
+            context.loaderOverlay.hide();
+            CustomSnackbar.awesome(context,
+                message: state.message ?? '', type: ContentType.success);
+            context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
+            context.read<SelectedGroupCubit>().setSelectedIndex(0);
+            Navigator.pop(context);
+          } else {
+            context.loaderOverlay.hide();
           }
-        } else {
-          context.loaderOverlay.hide();
-        }
-      },
+        }),
+      ],
       child: LoaderOverlay(
         useDefaultLoading: false,
         overlayColor: Colors.blue.shade700,
@@ -96,18 +126,35 @@ class _SettingScreenState extends State<SettingScreen> {
                           },
                         ),
                         ListTile(
+                          onTap: () => _showDeleteDialog(context),
+                          leading: Icon(
+                            Icons.delete_outline,
+                            color: Colors.blue.shade700,
+                          ),
+                          trailing: Icon(Icons.chevron_right),
+                          title: Text('Hapus group : ${group!.name}'),
+                        ),
+                        ListTile(
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (builder) {
                               return AboutScreen();
                             }));
                           },
+                          leading: Icon(
+                            Icons.info_outline,
+                            color: Colors.blue.shade700,
+                          ),
                           trailing: Icon(Icons.chevron_right),
                           title: Text('Tentang Aplikasi'),
                         ),
                         ListTile(
                           onTap: () => _showLogoutDialog(context),
                           trailing: Icon(Icons.chevron_right),
+                          leading: Icon(
+                            Icons.logout_outlined,
+                            color: Colors.blue.shade700,
+                          ),
                           title: Text('Keluar'),
                         ),
                       ],
@@ -141,8 +188,7 @@ class _SettingScreenState extends State<SettingScreen> {
           actions: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.white),
-              child:
-                  const Text('Cancel', style: TextStyle(color: Colors.black)),
+              child: const Text('Batal', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -150,10 +196,49 @@ class _SettingScreenState extends State<SettingScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.blue.shade700),
               child:
-                  const Text('Logout', style: TextStyle(color: Colors.white)),
+                  const Text('Keluar', style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.of(context).pop();
                 context.read<AuthBloc>().add(AuthOnLogout());
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Hapus',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Apakah kamu yakin ingin menghapus group ${group!.name}?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.white),
+              child: const Text('Batal', style: TextStyle(color: Colors.black)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.blue.shade700),
+              child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.read<DeleteGroupCubit>().deleteGroup(group!.id!);
               },
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:arisan_digital/models/group_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,6 @@ class SelectedGroupCubit extends Cubit<SelectedGroupState> {
   void initSelectedIndex() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     int? index = prefs.getInt("selectedIndexGroup");
-    return emit(SelectedGroupState(selectedIndex: index ?? 0));
+    return emit(SelectedGroupState(selectedIndex: index ?? 0, isInit: true));
   }
 }

@@ -1,15 +1,8 @@
 import 'package:arisan_digital/models/group_model.dart';
 
 class MemberModel {
-  int? id;
-  String? name,
-      noTelp,
-      noWhatsapp,
-      email,
-      datePaid,
-      statusPaid,
-      nominalPaid,
-      statusActive;
+  int? id, nominalPaid;
+  String? name, noTelp, noWhatsapp, email, datePaid, statusPaid, statusActive;
   GroupModel? group;
 
   MemberModel(

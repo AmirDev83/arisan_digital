@@ -4,6 +4,7 @@ import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
 import 'package:arisan_digital/models/response_model.dart';
 import 'package:arisan_digital/repositories/auth_repository.dart';
+import 'package:arisan_digital/utils/generator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +25,8 @@ class GroupRepository {
         'Authorization': 'Bearer $_token',
         'Accept': 'application/json'
       });
+
+      // print(response.body);
 
       if (response.statusCode == 200) {
         Iterable iterable = json.decode(response.body)['data'];
@@ -98,6 +101,7 @@ class GroupRepository {
             'periods_date': group.periodsDate,
             'dues': group.dues,
             'target': group.target ?? '',
+            'code': Generator.randomCode()
             // 'notes': group.notes,
           }));
 
