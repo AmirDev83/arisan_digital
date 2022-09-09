@@ -15,12 +15,3 @@ class GroupFetched extends GroupEvent {
   @override
   List<Object> get props => [isRefresh];
 }
-
-class GroupDeleted extends GroupEvent {
-  const GroupDeleted(this.id);
-
-  final int id;
-
-  @override
-  List<Object> get props => [id];
-}

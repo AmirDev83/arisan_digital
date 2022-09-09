@@ -202,8 +202,37 @@ class GroupRepository {
                 'notes': notes,
               }));
 
+      print(response.statusCode);
+
       // Error handling
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
+        var jsonResponse = json.decode(response.body);
+        return ResponseModel.fromJson(jsonResponse);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> updateDateGroup(int id, {String? date}) async {
+    try {
+      await getToken();
+      final response =
+          await http.patch(Uri.parse('$_baseURL/group/update/periods-date/$id'),
+              headers: {
+                'Authorization': 'Bearer $_token',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: json.encode({
+                'periods_date': date,
+              }));
+
+      // Error handling
+      if (response.statusCode == 201) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }

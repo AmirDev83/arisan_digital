@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "697471599644-fkq1n26ontjjoike8pukulnge4j2pla0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.caraguna.arisan.digital",
+            "certificate_hash": "2cc976eabc32a26e416c73fadf7d0125d4f5925d"
+          }
+        },
+        {
           "client_id": "697471599644-infgsgsldouffmi99a957u75iss2cjna.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

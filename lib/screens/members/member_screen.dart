@@ -25,7 +25,7 @@ class _MemberScreenState extends State<MemberScreen> {
             actions: [
               IconButton(
                   onPressed: () {
-                    createMemberModal(context);
+                    _createMemberModal(context);
                   },
                   icon: Icon(Icons.add)),
             ],
@@ -105,7 +105,7 @@ class _MemberScreenState extends State<MemberScreen> {
     );
   }
 
-  Future<void> createMemberModal(BuildContext context) {
+  Future<void> _createMemberModal(BuildContext context) {
     return showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       isScrollControlled: true,

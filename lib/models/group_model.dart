@@ -2,7 +2,14 @@ import 'package:arisan_digital/models/member_model.dart';
 
 class GroupModel {
   int? id, dues, target, totalBalance, totalNotDues;
-  String? name, code, periodsType, periodsDate, notes, status, createdAt;
+  String? name,
+      code,
+      periodsType,
+      periodsDate,
+      periodsDateEn,
+      notes,
+      status,
+      createdAt;
   List<MemberModel>? lastPaidMembers;
 
   GroupModel(
@@ -12,6 +19,7 @@ class GroupModel {
       this.name,
       this.code,
       this.periodsDate,
+      this.periodsDateEn,
       this.periodsType,
       this.notes,
       this.status,
@@ -26,6 +34,7 @@ class GroupModel {
         name: json['name'],
         code: json['code'],
         periodsDate: json['periods_date'],
+        periodsDateEn: json['periods_date_en'],
         periodsType: json['periods_type'],
         notes: json['notes'],
         status: json['status'],

@@ -41,6 +41,7 @@ class _SettingScreenState extends State<SettingScreen> {
             } else if (state is AuthLogout) {
               context.loaderOverlay.hide();
               if (state.authStatus == AuthStatus.unauthenticated) {
+                context.read<SelectedGroupCubit>().setSelectedIndex(0);
                 Navigator.pushAndRemoveUntil<void>(
                   context,
                   MaterialPageRoute<void>(
