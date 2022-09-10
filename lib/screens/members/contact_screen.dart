@@ -1,4 +1,6 @@
+import 'package:arisan_digital/blocs/contact_cubit/contact_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({Key? key}) : super(key: key);
@@ -8,6 +10,12 @@ class ContactScreen extends StatefulWidget {
 }
 
 class _ContactScreenState extends State<ContactScreen> {
+  @override
+  void initState() {
+    context.read<ContactCubit>().getContacts();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,29 +35,52 @@ class _ContactScreenState extends State<ContactScreen> {
                   title: Text('Contact')),
               SliverList(
                   delegate: SliverChildListDelegate([
-                ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: 16,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.only(bottom: 60),
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Zakia Fhadillah'),
-                        subtitle: Text('6285604959785'),
-                        trailing: Checkbox(
-                          checkColor: Colors.white,
-                          value: false,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              // isChecked = value!;
+                BlocBuilder<ContactCubit, ContactState>(
+                  builder: (context, state) {
+                    if (state is ContactDataState) {
+                      if (state.contactStatus == ContactStatus.success) {
+                        return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: state.listContacts!.length,
+                            shrinkWrap: true,
+                            padding: EdgeInsets.only(bottom: 60),
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text(
+                                    state.listContacts![index].displayName),
+                                subtitle:
+                                    state.listContacts![index].phones.length !=
+                                            0
+                                        ? Text(state.listContacts![index]
+                                            .phones[0].number)
+                                        : null,
+                                trailing: Checkbox(
+                                  checkColor: Colors.white,
+                                  value: false,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      // isChecked = value!;
+                                    });
+                                  },
+                                ),
+                                leading: SizedBox(
+                                    width: 40,
+                                    child: Image.asset(
+                                        "assets/images/icons/man.png")),
+                              );
                             });
-                          },
-                        ),
-                        leading: SizedBox(
-                            width: 40,
-                            child: Image.asset("assets/images/icons/man.png")),
-                      );
-                    })
+                      }
+                      return SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator());
+                    }
+                    return SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator());
+                  },
+                )
               ])),
               SliverList(delegate: SliverChildListDelegate([])),
             ]),

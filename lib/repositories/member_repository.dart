@@ -32,11 +32,12 @@ class MemberRepository {
             'group_id': member.group!.id,
             'name': member.name,
             'no_telp': member.noTelp,
-            'no_whatsapp': member.noWhatsapp,
+            'no_whatsapp': member.noTelp,
+            // 'no_whatsapp': member.noWhatsapp,
             'email': member.email,
           }));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }

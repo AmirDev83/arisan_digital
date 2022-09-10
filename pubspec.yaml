@@ -46,6 +46,9 @@ dependencies:
   pattern_formatter: ^2.0.0
   intl: ^0.17.0
   scrollable_positioned_list: ^0.3.4
+  fluttertoast: ^8.0.9
+  share_plus: ^4.1.0
+  flutter_contacts: ^1.1.5
 
 
   # The following adds the Cupertino Icons font to your application.

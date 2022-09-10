@@ -14,10 +14,13 @@ import 'package:arisan_digital/utils/currency_format.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -27,8 +30,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _dateController = TextEditingController();
-
   // Date Picker
   DateTime selectedDate = DateTime.now();
   DateTime now = DateTime.now();
@@ -110,7 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (builder) {
-                                          return MemberScreen();
+                                          return MemberScreen(
+                                            group: stateGroup
+                                                .groups[state.selectedIndex],
+                                          );
                                         }));
                                       },
                                       icon: const Icon(Icons.person_add))
@@ -264,8 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ],
                                   )),
                                   GestureDetector(
-                                    onTap: () => _qrCodeDialog(
-                                        "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${group.code}&choe=UTF-8"),
+                                    onTap: () =>
+                                        _qrCodeDialog(group.code ?? ''),
                                     child: Container(
                                         width: 50,
                                         child: Image.network(
@@ -778,14 +782,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _qrCodeDialog(String url) async {
+  Future<void> _qrCodeDialog(String code) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
           contentPadding: EdgeInsets.zero,
-          insetPadding: EdgeInsets.all(15),
+          insetPadding: const EdgeInsets.all(15),
           titlePadding: EdgeInsets.zero,
           buttonPadding: EdgeInsets.zero,
           actionsPadding: EdgeInsets.zero,
@@ -796,23 +800,46 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.width,
-                child: Image.network(url),
+                child: Image.network(
+                    "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$code&choe=UTF-8"),
               ),
-              // Text('holla'),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 width: MediaQuery.of(context).size.width,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.grey.shade400,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Salin Kode'),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: code));
+                          Fluttertoast.showToast(msg: 'Kode berhasil di salin');
+                        },
+                      ),
                     ),
-                  ),
-                  child: const Text('Simpan'),
-                  onPressed: () {},
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Bagikan'),
+                        onPressed: () => Share.share(
+                            'Yuk buka group lewat kode group dibawah ini!\n\nKode: $code'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               )
             ],
