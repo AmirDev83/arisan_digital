@@ -1,7 +1,6 @@
 import 'package:arisan_digital/blocs/member_cubit/member_cubit.dart';
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
-import 'package:arisan_digital/screens/members/contact_screen.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ class _MemberScreenState extends State<MemberScreen> {
   final TextEditingController _noTelpController = TextEditingController();
 
   final _formKeyCreate = GlobalKey<FormState>();
+  final _formKeyUpdate = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -244,30 +244,36 @@ class _MemberScreenState extends State<MemberScreen> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.grey.shade400,
+                          primary: member.canDelete!
+                              ? Colors.red.shade400
+                              : Colors.grey.shade400,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
                         child: const Text('Hapus'),
                         onPressed: () {
-                          Navigator.pop(context);
-                          _deleteConfirmationDialog(
-                              member.id!, member.name ?? '');
+                          if (member.canDelete!) {
+                            Navigator.pop(context);
+                            _deleteConfirmationDialog(
+                                member.id!, member.name ?? '');
+                          }
                         },
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
                           ),
-                        ),
-                        child: const Text('Edit'),
-                        onPressed: () {},
-                      ),
+                          child: const Text('Edit'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _updateMemberModal(context, member);
+                          }),
                     ),
                   ],
                 ),
@@ -592,6 +598,145 @@ class _MemberScreenState extends State<MemberScreen> {
                         //     MaterialPageRoute(builder: (builder) {
                         //   return ContactScreen();
                         // }));
+                      },
+                    ),
+                  ),
+                  // Container(
+                  //     margin: EdgeInsets.symmetric(vertical: 15),
+                  //     child: Center(child: const Text('Atau'))),
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width,
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       primary: Colors.white,
+                  //       onPrimary: Colors.lightBlue[700],
+                  //       shadowColor: Colors.transparent,
+                  //       shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(20.0),
+                  //           side: BorderSide(color: Colors.lightBlue.shade800)),
+                  //     ),
+                  //     child: const Text('Tambahkan dari Contact'),
+                  //     onPressed: () {
+                  //       Navigator.push(context,
+                  //           MaterialPageRoute(builder: (builder) {
+                  //         return ContactScreen();
+                  //       }));
+                  //     },
+                  //   ),
+                  // )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _updateMemberModal(BuildContext context, MemberModel member) {
+    final TextEditingController nameEditController = TextEditingController();
+    final TextEditingController emailEditController = TextEditingController();
+    final TextEditingController noTelpEditController = TextEditingController();
+
+    nameEditController.text = member.name ?? '';
+    emailEditController.text = member.email ?? '';
+    noTelpEditController.text = member.noTelp ?? '';
+    return showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Form(
+            key: _formKeyUpdate,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15))),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Update Anggota',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    'Masukkan data anggota arisan.',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: TextFormField(
+                        controller: nameEditController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nama anggota tidak boleh kosong.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            labelStyle: TextStyle(fontSize: 14),
+                            labelText: "Nama Anggota"),
+                      )),
+                  Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: TextFormField(
+                        controller: emailEditController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email tidak boleh kosong.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            helperText:
+                                "* Notifikasi akan dikirimkan melalui email.",
+                            labelStyle: TextStyle(fontSize: 14),
+                            labelText: "Email (Opsional)"),
+                      )),
+                  Container(
+                      margin: EdgeInsets.only(left: 5, right: 5),
+                      child: TextFormField(
+                        controller: noTelpEditController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'No telp tidak boleh kosong.';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            labelStyle: TextStyle(fontSize: 14),
+                            labelText: "No Telp (Whatsapp)"),
+                      )),
+                  SizedBox(
+                    height: 25,
+                  ),
+                  Container(
+                    // margin: EdgeInsets.all(15),
+                    width: MediaQuery.of(context).size.width,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      child: const Text('Simpan'),
+                      onPressed: () {
+                        if (_formKeyUpdate.currentState!.validate()) {
+                          Navigator.pop(context);
+                          context.read<MemberCubit>().updateMember(MemberModel(
+                              id: member.id!,
+                              group: widget.group,
+                              name: nameEditController.text,
+                              email: emailEditController.text,
+                              noTelp: noTelpEditController.text));
+                        }
                       },
                     ),
                   ),

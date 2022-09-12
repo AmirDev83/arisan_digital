@@ -88,4 +88,30 @@ class MemberCubit extends Cubit<MemberState> {
           message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
     }
   }
+
+  Future<void> updateMember(MemberModel member) async {
+    emit(const MemberDataState(memberStatus: MemberStatus.loading));
+    try {
+      ResponseModel? response = await _memberRepo.updateMember(member);
+      if (response == null) {
+        return emit(const MemberDataState(
+            memberStatus: MemberStatus.failure,
+            message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+      }
+
+      if (response.status == 'failure') {
+        return emit(MemberDataState(
+            memberStatus: MemberStatus.failure, message: response.message));
+      }
+
+      return emit(MemberSuccessState(message: response.message));
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return emit(const MemberDataState(
+          memberStatus: MemberStatus.failure,
+          message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+    }
+  }
 }

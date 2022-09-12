@@ -1,7 +1,7 @@
 import 'package:arisan_digital/models/member_model.dart';
 
 class GroupModel {
-  int? id, dues, target, totalBalance, totalNotDues;
+  int? id, dues, target, totalBalance, totalNotDues, createdBy;
   String? name,
       code,
       periodsType,
@@ -26,6 +26,7 @@ class GroupModel {
       this.totalBalance,
       this.totalNotDues,
       this.lastPaidMembers,
+      this.createdBy,
       this.createdAt});
 
   factory GroupModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +41,7 @@ class GroupModel {
         status: json['status'],
         dues: json['dues'],
         target: json['target'],
+        createdBy: json['created_by'],
         totalBalance: json['total_balance'],
         totalNotDues: json['total_not_dues'],
         lastPaidMembers: json['last_paid_members'] != null

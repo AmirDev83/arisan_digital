@@ -81,12 +81,13 @@ class MemberRepository {
               body: json.encode({
                 'name': member.name,
                 'no_telp': member.noTelp,
-                'no_whatsapp': member.noWhatsapp,
+                'no_whatsapp': member.noTelp,
+                // 'no_whatsapp': member.noWhatsapp,
                 'email': member.email,
               }));
 
       // Error handling
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }
