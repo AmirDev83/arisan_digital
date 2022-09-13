@@ -356,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         style: TextStyle(fontSize: 13),
                                       )),
                                       Text(
-                                        'Rp${currencyId.format(item.nominalPaid ?? 0)}',
+                                        'Rp${currencyId.format(group.dues ?? 0)}',
                                         style: TextStyle(
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500),
@@ -651,18 +651,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
-                          margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                          margin: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15),
                           child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                primary: group.isShuffle!
+                                    ? null
+                                    : Colors.grey.shade400,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                               ),
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (builder) {
-                                  return ShuffleScreen();
-                                }));
+                                if (group.isShuffle!) {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (builder) {
+                                    return ShuffleScreen(
+                                      members: stateGroup
+                                          .groups[state.selectedIndex].members,
+                                      group: stateGroup
+                                          .groups[state.selectedIndex],
+                                    );
+                                  }));
+                                }
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(12.0),

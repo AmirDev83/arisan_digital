@@ -12,10 +12,6 @@ class ArisanHistoryRepository {
   final AuthRepository _authRepo = AuthRepository();
   String? _token;
 
-  ArisanHistoryRepository() {
-    getToken();
-  }
-
   Future getToken() async {
     _token = await _authRepo.getToken();
   }
@@ -23,6 +19,7 @@ class ArisanHistoryRepository {
   Future<ResponseModel?> createArisanHistory(
       ArisanHistoryModel arisanHistory) async {
     try {
+      await getToken();
       final response =
           await http.post(Uri.parse('$_baseURL/arisan-history/store'),
               headers: {
@@ -51,6 +48,7 @@ class ArisanHistoryRepository {
 
   Future<List<ArisanHistoryModel>?> getArisanHistory(int id) async {
     try {
+      await getToken();
       final response = await http
           .get(Uri.parse('$_baseURL/arisan-histories/$id'), headers: {
         'Authorization': 'Bearer $_token',
@@ -73,6 +71,7 @@ class ArisanHistoryRepository {
 
   Future<ArisanHistoryModel?> showArisanHistory(int id) async {
     try {
+      await getToken();
       final response = await http.get(Uri.parse('$_baseURL/arisan-history/$id'),
           headers: {
             'Authorization': 'Bearer $_token',
@@ -93,6 +92,7 @@ class ArisanHistoryRepository {
 
   Future<ResponseModel?> deleteArisanHistory(int id) async {
     try {
+      await getToken();
       final response = await http
           .delete(Uri.parse('$_baseURL/arisan-history/delete/$id'), headers: {
         'Authorization': 'Bearer $_token',

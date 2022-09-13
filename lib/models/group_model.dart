@@ -11,10 +11,13 @@ class GroupModel {
       status,
       createdAt;
   List<MemberModel>? lastPaidMembers;
+  List<MemberModel>? members;
+  bool? isShuffle;
 
   GroupModel(
       {this.id,
       this.dues,
+      this.isShuffle,
       this.target,
       this.name,
       this.code,
@@ -22,6 +25,7 @@ class GroupModel {
       this.periodsDateEn,
       this.periodsType,
       this.notes,
+      this.members,
       this.status,
       this.totalBalance,
       this.totalNotDues,
@@ -36,6 +40,7 @@ class GroupModel {
         code: json['code'],
         periodsDate: json['periods_date'],
         periodsDateEn: json['periods_date_en'],
+        isShuffle: json['is_shuffle'],
         periodsType: json['periods_type'],
         notes: json['notes'],
         status: json['status'],
@@ -44,6 +49,10 @@ class GroupModel {
         createdBy: json['created_by'],
         totalBalance: json['total_balance'],
         totalNotDues: json['total_not_dues'],
+        members: json['members'] != null
+            ? List<MemberModel>.from(
+                json["members"].map((e) => MemberModel.fromJson(e)))
+            : null,
         lastPaidMembers: json['last_paid_members'] != null
             ? List<MemberModel>.from(
                 json["last_paid_members"].map((e) => MemberModel.fromJson(e)))

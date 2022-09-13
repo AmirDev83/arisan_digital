@@ -205,7 +205,7 @@ class GroupRepository {
       print(response.statusCode);
 
       // Error handling
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }
@@ -232,7 +232,7 @@ class GroupRepository {
               }));
 
       // Error handling
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }

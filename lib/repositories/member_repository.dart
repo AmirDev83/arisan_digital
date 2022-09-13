@@ -12,15 +12,12 @@ class MemberRepository {
   final AuthRepository _authRepo = AuthRepository();
   String? _token;
 
-  MemberRepository() {
-    getToken();
-  }
-
   Future getToken() async {
     _token = await _authRepo.getToken();
   }
 
   Future<ResponseModel?> createMember(MemberModel member) async {
+    await getToken();
     try {
       final response = await http.post(Uri.parse('$_baseURL/member/store'),
           headers: {
@@ -50,6 +47,7 @@ class MemberRepository {
   }
 
   Future<MemberModel?> showMember(int id) async {
+    await getToken();
     try {
       final response = await http.get(Uri.parse('$_baseURL/member/$id'),
           headers: {
@@ -70,6 +68,7 @@ class MemberRepository {
   }
 
   Future<ResponseModel?> updateMember(MemberModel member) async {
+    await getToken();
     try {
       final response =
           await http.patch(Uri.parse('$_baseURL/member/update/${member.id}'),
@@ -100,6 +99,7 @@ class MemberRepository {
   }
 
   Future<ResponseModel?> updateStatusPaid(MemberModel member) async {
+    await getToken();
     try {
       final response = await http.patch(
           Uri.parse('$_baseURL/member/update/status-paid/${member.id}'),
@@ -113,7 +113,7 @@ class MemberRepository {
             'status_paid': member.statusPaid,
             'nominal_paid': member.nominalPaid
           }));
-
+      print(response.body);
       // Error handling
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
@@ -128,6 +128,7 @@ class MemberRepository {
   }
 
   Future<ResponseModel?> updateStatusActive(MemberModel member) async {
+    await getToken();
     try {
       final response = await http.patch(
           Uri.parse('$_baseURL/member/update/status-active/${member.id}'),
@@ -154,6 +155,7 @@ class MemberRepository {
   }
 
   Future<ResponseModel?> resetStatusPaid(MemberModel member) async {
+    await getToken();
     try {
       final response = await http.patch(
           Uri.parse('$_baseURL/member/reset/status-paid/${member.id}'),
@@ -177,6 +179,7 @@ class MemberRepository {
   }
 
   Future<ResponseModel?> deleteMember(int id) async {
+    await getToken();
     try {
       final response = await http
           .delete(Uri.parse('$_baseURL/member/delete/$id'), headers: {

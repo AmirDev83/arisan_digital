@@ -1,7 +1,8 @@
 import 'package:arisan_digital/models/member_model.dart';
 
 class ArisanHistoryModel {
-  int? id, date, notes;
+  int? id;
+  String? date, notes;
   MemberModel? winner;
   List<ArisanHistoryDetail>? arisanHistoryDetails;
 

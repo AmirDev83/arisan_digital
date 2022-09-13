@@ -1,122 +1,300 @@
+import 'dart:math';
+
+import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
+import 'package:arisan_digital/blocs/shuffle_cubit/shuffle_cubit.dart';
+import 'package:arisan_digital/models/arisan_history_model.dart';
+import 'package:arisan_digital/models/group_model.dart';
+import 'package:arisan_digital/models/member_model.dart';
+import 'package:arisan_digital/utils/custom_snackbar.dart';
+import 'package:arisan_digital/utils/date_config.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ShuffleScreen extends StatefulWidget {
-  const ShuffleScreen({Key? key}) : super(key: key);
+  final List<MemberModel>? members;
+  final GroupModel? group;
+  const ShuffleScreen({Key? key, this.members, this.group}) : super(key: key);
 
   @override
   State<ShuffleScreen> createState() => _ShuffleScreenState();
 }
 
-class _ShuffleScreenState extends State<ShuffleScreen> {
+class _ShuffleScreenState extends State<ShuffleScreen>
+    with TickerProviderStateMixin {
+  MemberModel? winner;
+  bool isInit = true;
+
+  late AnimationController controller;
+
+  Future<MemberModel> getRandomWinner() async {
+    final random = Random();
+    MemberModel item = widget.members![random.nextInt(widget.members!.length)];
+    // print(item);
+    return item;
+  }
+
+  @override
+  void initState() {
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 5),
+    )..addListener(() {
+        setState(() {});
+      });
+    super.initState();
+  }
+
+  void startShuffle() async {
+    winner = null;
+    isInit = false;
+    setState(() {});
+    controller.reset();
+    playMusicLoading();
+    await controller.forward();
+    winner = await getRandomWinner();
+    playMusicWinner();
+    setState(() {});
+  }
+
+  void playMusicLoading() {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/loading.wav"),
+      showNotification: false,
+    );
+  }
+
+  void playMusicWinner() {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/winner.wav"),
+      showNotification: false,
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
-          titleTextStyle: TextStyle(
-              color: Colors.lightBlue.shade800, fontWeight: FontWeight.w500),
-          backgroundColor: Colors.lightBlue.shade800,
-          centerTitle: true,
-          elevation: 0,
-          // actions: [
-          //   IconButton(
-          //       onPressed: () {
-          //         // createMemberModal(context);
-          //       },
-          //       icon: Icon(Icons.add)),
-          // ],
-          title: Text('')),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.lightBlue.shade800,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                      bottomRight: Radius.circular(50))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Kocok Sekarang!',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Ayo Goyangkan Smartphone-mu',
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: Image.asset("assets/images/icons/shuffle.png"),
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 25),
-                    child: LinearPercentIndicator(
-                      // width: MediaQuery.of(context).size.width,
-                      lineHeight: 25,
-                      percent: 0.5,
-                      barRadius: Radius.circular(10),
-                      backgroundColor: Colors.grey,
-                      progressColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
+    return BlocListener<ShuffleCubit, ShuffleState>(
+      listener: (context, state) {
+        if (state is ShuffleDataState) {
+          if (state.shuffleStatus == ShuffleStatus.loading) {
+            context.loaderOverlay.show();
+          } else if (state.shuffleStatus == ShuffleStatus.success) {
+            context.loaderOverlay.hide();
+            CustomSnackbar.awesome(context,
+                message: state.message ?? '', type: ContentType.success);
+            context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
+            Navigator.pop(context);
+          } else {
+            context.loaderOverlay.hide();
+            CustomSnackbar.awesome(context,
+                message: state.message ?? '', type: ContentType.failure);
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+            iconTheme: IconThemeData(color: Colors.white),
+            titleTextStyle: TextStyle(
+                color: Colors.lightBlue.shade800, fontWeight: FontWeight.w500),
+            backgroundColor: winner == null
+                ? Colors.lightBlue.shade800
+                : Colors.lightGreen.shade800,
+            centerTitle: true,
+            elevation: 0,
+            title: Text('')),
+        body: LoaderOverlay(
+          useDefaultLoading: false,
+          overlayOpacity: 0.6,
+          overlayWidget: Center(
+            child: LoadingAnimationWidget.waveDots(
+              color: Colors.white,
+              size: 70,
             ),
           ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                flex: 10,
+                child: GestureDetector(
+                  onTap: () {
+                    if (isInit) {
+                      startShuffle();
+                    }
+                  },
                   child: Container(
-                      child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      onPrimary: Colors.lightBlue.shade900,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                          side: BorderSide(color: Colors.lightBlue.shade900)),
+                    width: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                        color: winner == null
+                            ? Colors.lightBlue.shade800
+                            : Colors.lightGreen.shade800,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(50),
+                            bottomRight: Radius.circular(50))),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          winner == null
+                              ? 'Kocok Sekarang!'
+                              : 'Selamat Kepada\n🎉🎉🎉\n${winner!.name}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          winner == null
+                              ? isInit
+                                  ? 'Tap untuk memulai mengocok!'
+                                  : 'Mohon tunggu...'
+                              : 'Telah memenangkan arisan hari ini.',
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        winner == null
+                            ? SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                child: Image.asset(
+                                    "assets/images/icons/shuffle.png"),
+                              )
+                            : Stack(
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Image.asset(
+                                        "assets/images/icons/trophy.png"),
+                                  ),
+                                  Container(
+                                    alignment: Alignment.bottomLeft,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.2,
+                                    height:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Image.asset(
+                                        "assets/images/icons/trophy-circle.png"),
+                                  )
+                                ],
+                              ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        // winner == null
+                        //     ? Container(
+                        //         margin: const EdgeInsets.symmetric(horizontal: 25),
+                        //         child: LinearProgressIndicator(
+                        //           minHeight: 25,
+                        //           color: Colors.white,
+                        //           backgroundColor: Colors.grey,
+                        //           value: controller.value,
+                        //           semanticsLabel: 'Linear progress indicator',
+                        //         ),
+                        //       )
+                        //     : Container(),
+                      ],
                     ),
-                    onPressed: () {},
-                    child: Text('Ulangi'),
-                  )),
+                  ),
                 ),
-                SizedBox(
-                  width: 10,
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      winner == null
+                          ? Expanded(
+                              child: Container(
+                              // margin: const EdgeInsets.symmetric(horizontal: 25),
+                              child: LinearProgressIndicator(
+                                minHeight: 25,
+                                color: Colors.lightBlue.shade800,
+                                backgroundColor: Colors.grey.shade300,
+                                value: controller.value,
+                                semanticsLabel: 'Linear progress indicator',
+                              ),
+                            ))
+                          : Container(),
+                      winner != null
+                          ? Expanded(
+                              child: Container(
+                                  child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  onPrimary: winner == null
+                                      ? Colors.lightBlue.shade900
+                                      : Colors.lightGreen.shade900,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      side: BorderSide(
+                                          color: winner == null
+                                              ? Colors.lightBlue.shade900
+                                              : Colors.lightGreen.shade900)),
+                                ),
+                                onPressed: () => startShuffle(),
+                                child: Text('Ulangi'),
+                              )),
+                            )
+                          : Container(),
+                      winner != null
+                          ? SizedBox(
+                              width: 10,
+                            )
+                          : Container(),
+                      winner != null
+                          ? Expanded(
+                              child: Container(
+                                  child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: winner == null
+                                      ? Colors.lightBlue.shade800
+                                      : Colors.lightGreen.shade900,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read<ShuffleCubit>()
+                                      .saveShuffleResult(ArisanHistoryModel(
+                                        date: DateConfig.dateToString(
+                                            DateTime.now()),
+                                        notes: '',
+                                        winner: MemberModel(
+                                          id: winner!.id,
+                                          group: widget.group,
+                                        ),
+                                      ));
+                                },
+                                child: Text('Simpan'),
+                              )),
+                            )
+                          : Container()
+                    ],
+                  ),
                 ),
-                Expanded(
-                  child: Container(
-                      child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.lightBlue.shade800,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Text('Simpan'),
-                  )),
-                )
-              ],
-            ),
-          )
-        ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

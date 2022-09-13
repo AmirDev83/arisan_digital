@@ -1,3 +1,4 @@
+import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/blocs/member_cubit/member_cubit.dart';
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
@@ -39,6 +40,7 @@ class _MemberScreenState extends State<MemberScreen> {
           CustomSnackbar.awesome(context,
               message: state.message, type: ContentType.success);
           context.read<MemberCubit>().getMembers(widget.group!.id!);
+          context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
         }
 
         if (state is MemberDataState) {
@@ -87,21 +89,22 @@ class _MemberScreenState extends State<MemberScreen> {
                                 _detailMemberDialog(state.listMembers![index]),
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 15),
-                              padding: state.listMembers![index].statusPaid ==
-                                      'cancel'
+                              padding: state.listMembers![index].statusActive ==
+                                      'inactive'
                                   ? EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 5)
                                   : null,
                               decoration: BoxDecoration(
                                   borderRadius:
-                                      state.listMembers![index].statusPaid ==
-                                              'cancel'
+                                      state.listMembers![index].statusActive ==
+                                              'inactive'
                                           ? BorderRadius.circular(10)
                                           : null,
-                                  color: state.listMembers![index].statusPaid ==
-                                          'cancel'
-                                      ? Colors.red.shade400
-                                      : null),
+                                  color:
+                                      state.listMembers![index].statusActive ==
+                                              'inactive'
+                                          ? Colors.red.shade400
+                                          : null),
                               child: Row(
                                 children: [
                                   Stack(
@@ -110,20 +113,15 @@ class _MemberScreenState extends State<MemberScreen> {
                                           width: 40,
                                           child: Image.asset(
                                               "assets/images/icons/man.png")),
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        alignment: Alignment.bottomLeft,
-                                        child: Icon(
-                                          Icons.circle,
-                                          color: state.listMembers![index]
-                                                      .statusActive ==
-                                                  'active'
-                                              ? Colors.green.shade500
-                                              : Colors.red.shade500,
-                                          size: 15,
-                                        ),
-                                      )
+                                      state.listMembers![index].isGetReward!
+                                          ? Container(
+                                              width: 20,
+                                              height: 40,
+                                              alignment: Alignment.bottomLeft,
+                                              child: Image.asset(
+                                                  "assets/images/icons/trophy-circle-2.png"),
+                                            )
+                                          : Container()
                                     ],
                                   ),
                                   SizedBox(
@@ -134,8 +132,15 @@ class _MemberScreenState extends State<MemberScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(state.listMembers![index].name ??
-                                            ''),
+                                        Text(
+                                            state.listMembers![index].name ??
+                                                '',
+                                            style: TextStyle(
+                                                color: state.listMembers![index]
+                                                            .statusActive ==
+                                                        'inactive'
+                                                    ? Colors.white
+                                                    : null)),
                                         SizedBox(
                                           height: 5,
                                         ),
@@ -152,11 +157,21 @@ class _MemberScreenState extends State<MemberScreen> {
                                   SizedBox(
                                     width: 5,
                                   ),
-                                  state.listMembers![index].statusPaid == 'paid'
+                                  state.listMembers![index].statusPaid !=
+                                          'unpaid'
                                       ? Container(
                                           child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                primary: Colors.green.shade400,
+                                                primary: state
+                                                            .listMembers![index]
+                                                            .statusPaid ==
+                                                        'paid'
+                                                    ? Colors.green.shade400
+                                                    : state.listMembers![index]
+                                                                .statusPaid ==
+                                                            'cancel'
+                                                        ? Colors.red.shade400
+                                                        : Colors.blue.shade400,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -164,7 +179,16 @@ class _MemberScreenState extends State<MemberScreen> {
                                                 ),
                                               ),
                                               onPressed: () {},
-                                              child: Text('Sudah Bayar')),
+                                              child: Text(state
+                                                          .listMembers![index]
+                                                          .statusPaid ==
+                                                      'paid'
+                                                  ? 'Sudah Bayar'
+                                                  : state.listMembers![index]
+                                                              .statusPaid ==
+                                                          'cancel'
+                                                      ? 'Batal'
+                                                      : 'Lewati')),
                                         )
                                       : Container()
                                 ],

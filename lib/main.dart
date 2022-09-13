@@ -8,6 +8,7 @@ import 'package:arisan_digital/blocs/groups/update_group_cubit/update_group_cubi
 import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
 import 'package:arisan_digital/blocs/member_cubit/member_cubit.dart';
+import 'package:arisan_digital/blocs/shuffle_cubit/shuffle_cubit.dart';
 import 'package:arisan_digital/screens/onboarding_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/http_overrides.dart';
@@ -79,6 +80,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => MemberCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ShuffleCubit(),
         ),
       ],
       child: MaterialApp(
