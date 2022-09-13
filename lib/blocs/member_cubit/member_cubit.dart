@@ -114,4 +114,82 @@ class MemberCubit extends Cubit<MemberState> {
           message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
     }
   }
+
+  Future<void> updateStatusActive(MemberModel member) async {
+    emit(const MemberDataState(memberStatus: MemberStatus.loading));
+    try {
+      ResponseModel? response = await _memberRepo.updateStatusActive(member);
+      if (response == null) {
+        return emit(const MemberDataState(
+            memberStatus: MemberStatus.failure,
+            message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+      }
+
+      if (response.status == 'failure') {
+        return emit(MemberDataState(
+            memberStatus: MemberStatus.failure, message: response.message));
+      }
+
+      return emit(MemberSuccessState(message: response.message));
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return emit(const MemberDataState(
+          memberStatus: MemberStatus.failure,
+          message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+    }
+  }
+
+  Future<void> updateStatusPaid(MemberModel member) async {
+    emit(const MemberDataState(memberStatus: MemberStatus.loading));
+    try {
+      ResponseModel? response = await _memberRepo.updateStatusPaid(member);
+      if (response == null) {
+        return emit(const MemberDataState(
+            memberStatus: MemberStatus.failure,
+            message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+      }
+
+      if (response.status == 'failure') {
+        return emit(MemberDataState(
+            memberStatus: MemberStatus.failure, message: response.message));
+      }
+
+      return emit(MemberSuccessState(message: response.message));
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return emit(const MemberDataState(
+          memberStatus: MemberStatus.failure,
+          message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+    }
+  }
+
+  Future<void> resetStatusPaid(MemberModel member) async {
+    emit(const MemberDataState(memberStatus: MemberStatus.loading));
+    try {
+      ResponseModel? response = await _memberRepo.resetStatusPaid(member);
+      if (response == null) {
+        return emit(const MemberDataState(
+            memberStatus: MemberStatus.failure,
+            message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+      }
+
+      if (response.status == 'failure') {
+        return emit(MemberDataState(
+            memberStatus: MemberStatus.failure, message: response.message));
+      }
+
+      return emit(MemberSuccessState(message: response.message));
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+      return emit(const MemberDataState(
+          memberStatus: MemberStatus.failure,
+          message: "Terjadi kesalahan sistem, silahkan coba kembali!"));
+    }
+  }
 }

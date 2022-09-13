@@ -37,7 +37,7 @@ class MemberRepository {
             'email': member.email,
           }));
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }
@@ -87,7 +87,7 @@ class MemberRepository {
               }));
 
       // Error handling
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         return ResponseModel.fromJson(jsonResponse);
       }
@@ -112,6 +112,32 @@ class MemberRepository {
             'date_paid': member.datePaid,
             'status_paid': member.statusPaid,
             'nominal_paid': member.nominalPaid
+          }));
+
+      // Error handling
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        return ResponseModel.fromJson(jsonResponse);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> updateStatusActive(MemberModel member) async {
+    try {
+      final response = await http.patch(
+          Uri.parse('$_baseURL/member/update/status-active/${member.id}'),
+          headers: {
+            'Authorization': 'Bearer $_token',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({
+            'status_active': member.statusActive,
           }));
 
       // Error handling

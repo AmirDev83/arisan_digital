@@ -87,6 +87,21 @@ class _MemberScreenState extends State<MemberScreen> {
                                 _detailMemberDialog(state.listMembers![index]),
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 15),
+                              padding: state.listMembers![index].statusPaid ==
+                                      'cancel'
+                                  ? EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5)
+                                  : null,
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                      state.listMembers![index].statusPaid ==
+                                              'cancel'
+                                          ? BorderRadius.circular(10)
+                                          : null,
+                                  color: state.listMembers![index].statusPaid ==
+                                          'cancel'
+                                      ? Colors.red.shade400
+                                      : null),
                               child: Row(
                                 children: [
                                   Stack(
@@ -141,6 +156,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                       ? Container(
                                           child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
+                                                primary: Colors.green.shade400,
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -214,7 +230,9 @@ class _MemberScreenState extends State<MemberScreen> {
                   contentPadding: EdgeInsets.zero,
                   trailing: Icon(Icons.chevron_right),
                   title: Text('Status anggota'),
-                  subtitle: Text(member.statusActive ?? ''),
+                  subtitle: Text(member.statusActive == 'active'
+                      ? 'Aktif'
+                      : 'Tidak Aktif'),
                 ),
               ),
               Padding(
@@ -320,11 +338,17 @@ class _MemberScreenState extends State<MemberScreen> {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                         ),
-                        child: const Text('Nonactive'),
+                        child: const Text('Inactive'),
                         onPressed: () {
-                          if (member.statusActive == 'nonactive') {
+                          if (member.statusActive == 'inactive') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusActive(
+                                MemberModel(
+                                    id: member.id, statusActive: 'inactive'));
+                          }
                         },
                       ),
                     ),
@@ -340,7 +364,13 @@ class _MemberScreenState extends State<MemberScreen> {
                         onPressed: () {
                           if (member.statusActive == 'active') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusActive(
+                                MemberModel(
+                                    id: member.id, statusActive: 'active'));
+                          }
                         },
                       ),
                     ),
@@ -358,6 +388,7 @@ class _MemberScreenState extends State<MemberScreen> {
   }
 
   Future<void> _statusPaidMemberDialog(MemberModel member) async {
+    final DateTime now = DateTime.now();
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -391,9 +422,19 @@ class _MemberScreenState extends State<MemberScreen> {
                         ),
                         child: const Text('Lewati'),
                         onPressed: () {
-                          if (member.statusActive == 'active') {
+                          if (member.statusPaid == 'skip') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusPaid(
+                                MemberModel(
+                                    id: member.id,
+                                    statusPaid: 'skip',
+                                    nominalPaid: null,
+                                    datePaid:
+                                        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}'));
+                          }
                         },
                       ),
                     ),
@@ -408,9 +449,19 @@ class _MemberScreenState extends State<MemberScreen> {
                         ),
                         child: const Text('Batalkan'),
                         onPressed: () {
-                          if (member.statusPaid == 'paid') {
+                          if (member.statusPaid == 'cancel') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusPaid(
+                                MemberModel(
+                                    id: member.id,
+                                    statusPaid: 'cancel',
+                                    nominalPaid: null,
+                                    datePaid:
+                                        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}'));
+                          }
                         },
                       ),
                     ),
@@ -432,9 +483,18 @@ class _MemberScreenState extends State<MemberScreen> {
                         ),
                         child: const Text('Belum Bayar'),
                         onPressed: () {
-                          if (member.statusActive == 'active') {
+                          if (member.statusPaid == 'unpaid') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusPaid(
+                                MemberModel(
+                                    id: member.id,
+                                    statusPaid: 'unpaid',
+                                    nominalPaid: null,
+                                    datePaid: null));
+                          }
                         },
                       ),
                     ),
@@ -451,7 +511,17 @@ class _MemberScreenState extends State<MemberScreen> {
                         onPressed: () {
                           if (member.statusPaid == 'paid') {
                             Navigator.pop(context);
-                          } else {}
+                          } else {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            context.read<MemberCubit>().updateStatusPaid(
+                                MemberModel(
+                                    id: member.id,
+                                    statusPaid: 'paid',
+                                    nominalPaid: null,
+                                    datePaid:
+                                        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}'));
+                          }
                         },
                       ),
                     ),
@@ -568,6 +638,7 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "No Telp (Whatsapp)"),
@@ -710,6 +781,7 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "No Telp (Whatsapp)"),
