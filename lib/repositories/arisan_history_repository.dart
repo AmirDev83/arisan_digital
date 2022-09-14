@@ -16,6 +16,29 @@ class ArisanHistoryRepository {
     _token = await _authRepo.getToken();
   }
 
+  Future<List<ArisanHistoryModel>?> getArisanHistories(int id) async {
+    try {
+      await getToken();
+      final response = await http
+          .get(Uri.parse('$_baseURL/arisan-histories/$id'), headers: {
+        'Authorization': 'Bearer $_token',
+        'Accept': 'application/json'
+      });
+
+      if (response.statusCode == 200) {
+        Iterable iterable = json.decode(response.body)['data'];
+        List<ArisanHistoryModel> listArisanHistories =
+            iterable.map((e) => ArisanHistoryModel.fromJson(e)).toList();
+        return listArisanHistories;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
   Future<ResponseModel?> createArisanHistory(
       ArisanHistoryModel arisanHistory) async {
     try {

@@ -551,7 +551,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onPressed: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (builder) {
-                                        return HistoryScreen();
+                                        return HistoryScreen(
+                                          group: group,
+                                        );
                                       }));
                                     },
                                     child: Text('Lihat Riwayat')),

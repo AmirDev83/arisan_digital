@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:arisan_digital/blocs/arisan_history_cubit/arisan_history_cubit.dart';
 import 'package:arisan_digital/blocs/auth_bloc/auth_bloc.dart';
 import 'package:arisan_digital/blocs/contact_cubit/contact_cubit.dart';
 import 'package:arisan_digital/blocs/groups/create_group_cubit/create_group_cubit.dart';
@@ -83,6 +84,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ShuffleCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ArisanHistoryCubit(),
         ),
       ],
       child: MaterialApp(

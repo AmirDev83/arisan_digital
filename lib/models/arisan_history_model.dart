@@ -14,8 +14,8 @@ class ArisanHistoryModel {
         id: json['id'],
         date: json['date'],
         notes: json['notes'],
-        winner: json['member'] != null
-            ? MemberModel.fromJson(json['member'])
+        winner: json['winner'] != null
+            ? MemberModel.fromJson(json['winner'])
             : null,
         arisanHistoryDetails: json['arisan_history_details'] != null
             ? List<ArisanHistoryDetail>.from(json["arisan_history_details"]
