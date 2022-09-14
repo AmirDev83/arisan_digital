@@ -21,21 +21,21 @@ class _AboutScreenState extends State<AboutScreen> {
             backgroundColor: Colors.white,
             centerTitle: true,
             elevation: 0,
-            title: Text('Tentang Aplikasi')),
+            title: const Text('Tentang Aplikasi')),
         SliverList(
             delegate: SliverChildListDelegate([
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: const Text(
                       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget accumsan ex. Donec faucibus elementum nulla sed ullamcorper. Fusce urna nisi, tincidunt vitae lectus ut, tristique egestas elit. Nam ac diam quis leo tincidunt convallis in nec sem. Nam maximus purus velit, non efficitur purus placerat eu. Nam mauris dui, tempus eget tortor nec, imperdiet accumsan lacus.'),
                 ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Text(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: const Text(
                       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget accumsan ex. Donec faucibus elementum nulla sed ullamcorper. Fusce urna nisi, tincidunt vitae lectus ut, tristique egestas elit. Nam ac diam quis leo tincidunt convallis in nec sem. Nam maximus purus velit, non efficitur purus placerat eu. Nam mauris dui, tempus eget tortor nec, imperdiet accumsan lacus.'),
                 ),
               ],

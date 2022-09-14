@@ -95,71 +95,96 @@ class _SettingScreenState extends State<SettingScreen> {
                     backgroundColor: Colors.white,
                     centerTitle: true,
                     elevation: 0,
-                    title: Text('Pengaturan')),
+                    title: const Text('Pengaturan')),
                 SliverList(
                     delegate: SliverChildListDelegate([
-                  Container(
-                    child: Column(
-                      children: [
-                        BlocBuilder<AuthBloc, AuthState>(
-                          builder: (context, state) {
-                            if (state is AuthUser) {
-                              if (state.authStatus ==
-                                  AuthStatus.authenticated) {
-                                return ListTile(
-                                  leading: CircleAvatar(
-                                    child: SizedBox(
-                                        width: 50,
-                                        height: 50,
-                                        child: ClipOval(
-                                          child: Image.network(
-                                            state.user?.photoUrl ?? '',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        )),
-                                  ),
-                                  title: Text(state.user?.name ?? ''),
-                                  subtitle: Text(state.user?.email ?? ''),
-                                );
-                              }
+                  Column(
+                    children: [
+                      BlocBuilder<AuthBloc, AuthState>(
+                        builder: (context, state) {
+                          if (state is AuthUser) {
+                            if (state.authStatus == AuthStatus.authenticated) {
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: ClipOval(
+                                        child: Image.network(
+                                          state.user?.photoUrl ?? '',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )),
+                                ),
+                                title: Text(state.user?.name ?? ''),
+                                subtitle: Text(state.user?.email ?? ''),
+                              );
                             }
-                            return Container();
-                          },
+                          }
+                          return Container();
+                        },
+                      ),
+                      ListTile(
+                        onTap: () => _showDeleteDialog(context),
+                        leading: Icon(
+                          Icons.delete_outline,
+                          color: Colors.blue.shade700,
                         ),
-                        ListTile(
-                          onTap: () => _showDeleteDialog(context),
-                          leading: Icon(
-                            Icons.delete_outline,
-                            color: Colors.blue.shade700,
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                          title: Text('Hapus group : ${group!.name}'),
+                        trailing: const Icon(Icons.chevron_right),
+                        title: Text('Hapus group : ${group!.name}'),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return const AboutScreen();
+                          }));
+                        },
+                        leading: Icon(
+                          Icons.info_outline,
+                          color: Colors.blue.shade700,
                         ),
-                        ListTile(
-                          onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (builder) {
-                              return AboutScreen();
-                            }));
-                          },
-                          leading: Icon(
-                            Icons.info_outline,
-                            color: Colors.blue.shade700,
-                          ),
-                          trailing: Icon(Icons.chevron_right),
-                          title: Text('Tentang Aplikasi'),
+                        trailing: const Icon(Icons.chevron_right),
+                        title: const Text('Tentang Aplikasi'),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return const AboutScreen();
+                          }));
+                        },
+                        leading: Icon(
+                          Icons.comment_outlined,
+                          color: Colors.blue.shade700,
                         ),
-                        ListTile(
-                          onTap: () => _showLogoutDialog(context),
-                          trailing: Icon(Icons.chevron_right),
-                          leading: Icon(
-                            Icons.logout_outlined,
-                            color: Colors.blue.shade700,
-                          ),
-                          title: Text('Keluar'),
+                        trailing: const Icon(Icons.chevron_right),
+                        title: const Text('Kritik dan Saran'),
+                      ),
+                      ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return const AboutScreen();
+                          }));
+                        },
+                        leading: Icon(
+                          Icons.star_outline,
+                          color: Colors.blue.shade700,
                         ),
-                      ],
-                    ),
+                        trailing: const Icon(Icons.chevron_right),
+                        title: const Text('Review Aplikasi'),
+                      ),
+                      ListTile(
+                        onTap: () => _showLogoutDialog(context),
+                        trailing: const Icon(Icons.chevron_right),
+                        leading: Icon(
+                          Icons.logout_outlined,
+                          color: Colors.blue.shade700,
+                        ),
+                        title: const Text('Keluar'),
+                      ),
+                    ],
                   )
                 ])),
                 SliverList(delegate: SliverChildListDelegate([])),

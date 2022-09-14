@@ -19,6 +19,16 @@ class ArisanHistoryDataState extends ArisanHistoryState {
   final String? message;
   final ArisanHistoryStatus arisanHistoryStatus;
 
+  ArisanHistoryDataState copyWith(
+      {List<ArisanHistoryModel>? arisanHistories,
+      String? message,
+      ArisanHistoryStatus? arisanHistoryStatus}) {
+    return ArisanHistoryDataState(
+        arisanHistories: arisanHistories ?? this.arisanHistories,
+        message: message ?? this.message,
+        arisanHistoryStatus: arisanHistoryStatus!);
+  }
+
   @override
   List<Object> get props =>
       [arisanHistories ?? [], message ?? '', arisanHistoryStatus];

@@ -69,9 +69,9 @@ class _MemberScreenState extends State<MemberScreen> {
                     onPressed: () {
                       _createMemberModal(context);
                     },
-                    icon: Icon(Icons.add)),
+                    icon: const Icon(Icons.add)),
               ],
-              title: Text('Anggota')),
+              title: const Text('Anggota')),
           SliverList(
               delegate: SliverChildListDelegate([
             BlocBuilder<MemberCubit, MemberState>(
@@ -91,7 +91,7 @@ class _MemberScreenState extends State<MemberScreen> {
                               margin: const EdgeInsets.only(bottom: 15),
                               padding: state.listMembers![index].statusActive ==
                                       'inactive'
-                                  ? EdgeInsets.symmetric(
+                                  ? const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 5)
                                   : null,
                               decoration: BoxDecoration(
@@ -124,7 +124,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                           : Container()
                                     ],
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Expanded(
@@ -141,7 +141,7 @@ class _MemberScreenState extends State<MemberScreen> {
                                                         'inactive'
                                                     ? Colors.white
                                                     : null)),
-                                        SizedBox(
+                                        const SizedBox(
                                           height: 5,
                                         ),
                                         Text(
@@ -149,47 +149,43 @@ class _MemberScreenState extends State<MemberScreen> {
                                               (state.listMembers![index]
                                                       .email ??
                                                   ''),
-                                          style: TextStyle(color: Colors.grey),
+                                          style: const TextStyle(
+                                              color: Colors.grey),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   state.listMembers![index].statusPaid !=
                                           'unpaid'
-                                      ? Container(
-                                          child: ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                primary: state
-                                                            .listMembers![index]
+                                      ? ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: state.listMembers![index]
+                                                        .statusPaid ==
+                                                    'paid'
+                                                ? Colors.green.shade400
+                                                : state.listMembers![index]
                                                             .statusPaid ==
-                                                        'paid'
-                                                    ? Colors.green.shade400
-                                                    : state.listMembers![index]
-                                                                .statusPaid ==
-                                                            'cancel'
-                                                        ? Colors.red.shade400
-                                                        : Colors.blue.shade400,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
-                                                ),
-                                              ),
-                                              onPressed: () {},
-                                              child: Text(state
-                                                          .listMembers![index]
+                                                        'cancel'
+                                                    ? Colors.red.shade400
+                                                    : Colors.blue.shade400,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                          ),
+                                          onPressed: () {},
+                                          child: Text(state.listMembers![index]
+                                                      .statusPaid ==
+                                                  'paid'
+                                              ? 'Sudah Bayar'
+                                              : state.listMembers![index]
                                                           .statusPaid ==
-                                                      'paid'
-                                                  ? 'Sudah Bayar'
-                                                  : state.listMembers![index]
-                                                              .statusPaid ==
-                                                          'cancel'
-                                                      ? 'Batal'
-                                                      : 'Lewati')),
-                                        )
+                                                      'cancel'
+                                                  ? 'Batal'
+                                                  : 'Lewati'))
                                       : Container()
                                 ],
                               ),
@@ -197,9 +193,9 @@ class _MemberScreenState extends State<MemberScreen> {
                           );
                         });
                   }
-                  return Center(
+                  return const Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(15.0),
+                      padding: EdgeInsets.all(15.0),
                       child: SizedBox(
                           width: 30,
                           height: 30,
@@ -207,9 +203,9 @@ class _MemberScreenState extends State<MemberScreen> {
                     ),
                   );
                 }
-                return Center(
+                return const Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: EdgeInsets.all(15.0),
                     child: SizedBox(
                         width: 30,
                         height: 30,
@@ -252,8 +248,8 @@ class _MemberScreenState extends State<MemberScreen> {
                 child: ListTile(
                   onTap: () => _statusActiveMemberDialog(member),
                   contentPadding: EdgeInsets.zero,
-                  trailing: Icon(Icons.chevron_right),
-                  title: Text('Status anggota'),
+                  trailing: const Icon(Icons.chevron_right),
+                  title: const Text('Status anggota'),
                   subtitle: Text(member.statusActive == 'active'
                       ? 'Aktif'
                       : 'Tidak Aktif'),
@@ -264,8 +260,8 @@ class _MemberScreenState extends State<MemberScreen> {
                 child: ListTile(
                   onTap: () => _statusPaidMemberDialog(member),
                   contentPadding: EdgeInsets.zero,
-                  trailing: Icon(Icons.chevron_right),
-                  title: Text('Status pembayaran'),
+                  trailing: const Icon(Icons.chevron_right),
+                  title: const Text('Status pembayaran'),
                   subtitle: Text(member.statusPaid == 'paid'
                       ? 'Sudah Bayar'
                       : member.statusPaid == 'unpaid'
@@ -345,8 +341,8 @@ class _MemberScreenState extends State<MemberScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(15),
+              const Padding(
+                padding: EdgeInsets.all(15),
                 child: Text('Ubah Status Anggota'),
               ),
               Container(
@@ -427,8 +423,8 @@ class _MemberScreenState extends State<MemberScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(15),
+              const Padding(
+                padding: EdgeInsets.all(15),
                 child: Text('Ubah Status Pembayaran'),
               ),
               Container(
@@ -605,8 +601,8 @@ class _MemberScreenState extends State<MemberScreen> {
             key: _formKeyCreate,
             child: Container(
               height: MediaQuery.of(context).size.height * 0.6,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
@@ -614,16 +610,16 @@ class _MemberScreenState extends State<MemberScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Tambah Anggota',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  Text(
+                  const Text(
                     'Masukkan data anggota arisan.',
                     style: TextStyle(fontSize: 14),
                   ),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: _nameController,
                         validator: (value) {
@@ -632,12 +628,12 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "Nama Anggota"),
                       )),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: _emailController,
                         validator: (value) {
@@ -646,14 +642,14 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             helperText:
                                 "* Notifikasi akan dikirimkan melalui email.",
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "Email (Opsional)"),
                       )),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: _noTelpController,
                         validator: (value) {
@@ -663,15 +659,14 @@ class _MemberScreenState extends State<MemberScreen> {
                           return null;
                         },
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "No Telp (Whatsapp)"),
                       )),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
-                  Container(
-                    // margin: EdgeInsets.all(15),
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -748,8 +743,8 @@ class _MemberScreenState extends State<MemberScreen> {
             key: _formKeyUpdate,
             child: Container(
               height: MediaQuery.of(context).size.height * 0.6,
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
@@ -757,16 +752,16 @@ class _MemberScreenState extends State<MemberScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Update Anggota',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                   ),
-                  Text(
+                  const Text(
                     'Masukkan data anggota arisan.',
                     style: TextStyle(fontSize: 14),
                   ),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: nameEditController,
                         validator: (value) {
@@ -775,12 +770,12 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "Nama Anggota"),
                       )),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: emailEditController,
                         validator: (value) {
@@ -789,14 +784,14 @@ class _MemberScreenState extends State<MemberScreen> {
                           }
                           return null;
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             helperText:
                                 "* Notifikasi akan dikirimkan melalui email.",
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "Email (Opsional)"),
                       )),
                   Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: TextFormField(
                         controller: noTelpEditController,
                         validator: (value) {
@@ -806,14 +801,14 @@ class _MemberScreenState extends State<MemberScreen> {
                           return null;
                         },
                         keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             labelStyle: TextStyle(fontSize: 14),
                             labelText: "No Telp (Whatsapp)"),
                       )),
-                  SizedBox(
+                  const SizedBox(
                     height: 25,
                   ),
-                  Container(
+                  SizedBox(
                     // margin: EdgeInsets.all(15),
                     width: MediaQuery.of(context).size.width,
                     child: ElevatedButton(

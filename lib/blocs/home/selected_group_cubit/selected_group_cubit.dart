@@ -19,4 +19,9 @@ class SelectedGroupCubit extends Cubit<SelectedGroupState> {
     int? index = prefs.getInt("selectedIndexGroup");
     return emit(SelectedGroupState(selectedIndex: index ?? 0, isInit: true));
   }
+
+  void showBalance() async {
+    return emit(const SelectedGroupState()
+        .copyWith(isShowBalance: state.isShowBalance ? false : true));
+  }
 }

@@ -7,7 +7,9 @@ import 'package:flutter/foundation.dart';
 part 'arisan_history_state.dart';
 
 class ArisanHistoryCubit extends Cubit<ArisanHistoryState> {
-  ArisanHistoryCubit() : super(const ArisanHistoryDataState());
+  ArisanHistoryCubit()
+      : super(const ArisanHistoryDataState(
+            arisanHistoryStatus: ArisanHistoryStatus.initial));
 
   final ArisanHistoryRepository _arisanHistoryRepo = ArisanHistoryRepository();
 

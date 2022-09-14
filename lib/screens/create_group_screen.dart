@@ -78,7 +78,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               context.loaderOverlay.hide();
               CustomSnackbar.awesome(context,
                   message: state.message ?? '', type: ContentType.success);
-              context.read<GroupBloc>().add(GroupFetched(isRefresh: true));
+              context
+                  .read<GroupBloc>()
+                  .add(const GroupFetched(isRefresh: true));
               Navigator.pop(context);
             } else {
               context.loaderOverlay.hide();
@@ -87,8 +89,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             }
           },
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(15),
-            child: Container(
+            padding: const EdgeInsets.all(15),
+            child: SizedBox(
               height: MediaQuery.of(context).size.height * 0.82,
               child: Form(
                 key: _formKey,
@@ -102,25 +104,23 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                           fontSize: 20,
                           color: Colors.lightBlue.shade900),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    Text(
+                    const Text(
                       "Tentukan nama group arisan yang kamu kelola sekarang.",
                       style: TextStyle(fontSize: 15),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Expanded(
                       child: Center(
-                        child: Container(
-                          child: Image.asset("assets/images/world-group.png"),
-                        ),
+                        child: Image.asset("assets/images/world-group.png"),
                       ),
                     ),
                     Container(
-                        margin: EdgeInsets.only(left: 5, right: 5),
+                        margin: const EdgeInsets.only(left: 5, right: 5),
                         child: TextFormField(
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -129,13 +129,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             return null;
                           },
                           controller: _groupNameController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               // label: Text('Nama Group'),
                               helperText: "* Contoh: kantor, komplek, dll.",
                               labelText: "Nama Group"),
                         )),
                     Container(
-                        margin: EdgeInsets.only(left: 5, right: 5, bottom: 20),
+                        margin: const EdgeInsets.only(
+                            left: 5, right: 5, bottom: 20),
                         child: Row(
                           children: [
                             Expanded(
@@ -154,11 +155,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                           NumberFormat.decimalPattern('en'))
                                 ],
                                 keyboardType: TextInputType.number,
-                                decoration:
-                                    InputDecoration(labelText: "Nominal Iuran"),
+                                decoration: const InputDecoration(
+                                    labelText: "Nominal Iuran"),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Expanded(
@@ -173,7 +174,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                   },
                                   enabled: false,
                                   controller: _dateController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       labelText: "Tanggal Mulai"),
                                 ),
                               ),
@@ -181,12 +182,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                           ],
                         )),
                     Container(
-                      margin: EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.only(left: 5, right: 5),
                       child: DropdownButton<String>(
                         value: dropdownValue,
-                        icon: Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: const Icon(Icons.arrow_drop_down),
+                        icon: const Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Icon(Icons.arrow_drop_down),
                         ),
                         elevation: 16,
                         isExpanded: true,
@@ -213,10 +214,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 25,
                     ),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -225,8 +226,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                             ),
                           ),
                           onPressed: () => _createGroup(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
+                          child: const Padding(
+                            padding: EdgeInsets.all(12.0),
                             child: Text('Tambah Group'),
                           )),
                     )

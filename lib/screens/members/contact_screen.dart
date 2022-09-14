@@ -32,7 +32,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   backgroundColor: Colors.white,
                   centerTitle: true,
                   elevation: 0,
-                  title: Text('Contact')),
+                  title: const Text('Contact')),
               SliverList(
                   delegate: SliverChildListDelegate([
                 BlocBuilder<ContactCubit, ContactState>(
@@ -40,17 +40,16 @@ class _ContactScreenState extends State<ContactScreen> {
                     if (state is ContactDataState) {
                       if (state.contactStatus == ContactStatus.success) {
                         return ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: state.listContacts!.length,
                             shrinkWrap: true,
-                            padding: EdgeInsets.only(bottom: 60),
+                            padding: const EdgeInsets.only(bottom: 60),
                             itemBuilder: (context, index) {
                               return ListTile(
                                 title: Text(
                                     state.listContacts![index].displayName),
                                 subtitle:
-                                    state.listContacts![index].phones.length !=
-                                            0
+                                    state.listContacts![index].phones.isNotEmpty
                                         ? Text(state.listContacts![index]
                                             .phones[0].number)
                                         : null,
@@ -70,12 +69,12 @@ class _ContactScreenState extends State<ContactScreen> {
                               );
                             });
                       }
-                      return SizedBox(
+                      return const SizedBox(
                           width: 30,
                           height: 30,
                           child: CircularProgressIndicator());
                     }
-                    return SizedBox(
+                    return const SizedBox(
                         width: 30,
                         height: 30,
                         child: CircularProgressIndicator());
@@ -88,7 +87,7 @@ class _ContactScreenState extends State<ContactScreen> {
               alignment: Alignment.bottomCenter,
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(5),
+                padding: const EdgeInsets.all(5),
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -100,7 +99,7 @@ class _ContactScreenState extends State<ContactScreen> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (builder) {
-                      return ContactScreen();
+                      return const ContactScreen();
                     }));
                   },
                 ),

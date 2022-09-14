@@ -62,16 +62,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             onPressed: () {
               _onIntroEnd(context);
             },
-            child: const Text(
-              'Mulai Sekarang',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
             style: ElevatedButton.styleFrom(
               primary: Colors.blue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
+            ),
+            child: const Text(
+              'Mulai Sekarang',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
           decoration: pageDecoration,

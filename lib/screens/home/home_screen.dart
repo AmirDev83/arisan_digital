@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                   ],
-                  title: Text('Arisan Digital')),
+                  title: const Text('Arisan Digital')),
               SliverList(
                   delegate: SliverChildListDelegate([
                 Stack(
@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: MediaQuery.of(context).size.width,
                       height: 90,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(25),
                               bottomRight: Radius.circular(25)),
                           color: Colors.blue[700]),
@@ -149,14 +149,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (builder) {
-                              return CreateGroupScreen();
+                              return const CreateGroupScreen();
                             }));
                           },
                           child: Container(
                               height: 30,
                               width: 30,
-                              margin: EdgeInsets.only(left: 15, top: 5),
-                              padding: EdgeInsets.all(3),
+                              margin: const EdgeInsets.only(left: 15, top: 5),
+                              padding: const EdgeInsets.all(3),
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.white),
                                   borderRadius: BorderRadius.circular(5),
@@ -164,11 +164,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.3),
                                       blurRadius: 7,
-                                      offset: Offset(1, 3),
+                                      offset: const Offset(1, 3),
                                     )
                                   ],
                                   color: Colors.blue[700]),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.group_add,
                                 color: Colors.white,
                               )),
@@ -216,9 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             GroupModel group =
                                 stateGroup.groups[state.selectedIndex];
                             return Container(
-                              margin:
-                                  EdgeInsets.only(top: 55, left: 15, right: 15),
-                              padding: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.only(
+                                  top: 55, left: 15, right: 15),
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 10),
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     BoxShadow(
                                       color: Colors.grey.withOpacity(0.3),
                                       blurRadius: 7,
-                                      offset: Offset(1, 3),
+                                      offset: const Offset(1, 3),
                                     )
                                   ],
                                   color: Colors.white),
@@ -238,31 +238,42 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Saldo Arisan',
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            'Rp ',
+                                          const Text(
+                                            "Rp ",
                                             style: TextStyle(fontSize: 12),
                                           ),
                                           Text(
-                                            '${currencyId.format(group.totalBalance)}',
-                                            style: TextStyle(
+                                            state.isShowBalance
+                                                ? currencyId
+                                                    .format(group.totalBalance)
+                                                : '**********',
+                                            style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold),
                                           ),
-                                          Container(
-                                              margin: EdgeInsets.only(left: 10),
-                                              child: Icon(Icons.visibility_off))
+                                          GestureDetector(
+                                            onTap: () => context
+                                                .read<SelectedGroupCubit>()
+                                                .showBalance(),
+                                            child: Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 10),
+                                                child: Icon(state.isShowBalance
+                                                    ? Icons.visibility
+                                                    : Icons.visibility_off)),
+                                          )
                                         ],
                                       ),
                                     ],
@@ -270,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   GestureDetector(
                                     onTap: () =>
                                         _qrCodeDialog(group.code ?? ''),
-                                    child: Container(
+                                    child: SizedBox(
                                         width: 50,
                                         child: Image.network(
                                             "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${group.code}&choe=UTF-8")),
@@ -299,18 +310,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                       return SliverList(
                           delegate: SliverChildListDelegate([
-                        SizedBox(
+                        const SizedBox(
                           height: 15,
                         ),
                         Container(
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                             horizontal: 20,
                           ),
                           child: Column(
                             children: [
                               Row(
                                 children: [
-                                  Expanded(
+                                  const Expanded(
                                     child: Text(
                                       'Terakhir Bayar',
                                       style: TextStyle(
@@ -322,11 +333,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onTap: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (builder) {
-                                        return MemberScreen();
+                                        return MemberScreen(
+                                          group: group,
+                                        );
                                       }));
                                     },
                                     child: Row(
-                                      children: [
+                                      children: const [
                                         Text('Lihat Semua'),
                                         Icon(Icons.chevron_right)
                                       ],
@@ -334,30 +347,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               for (MemberModel item
                                   in (group.lastPaidMembers ?? []))
                                 Container(
-                                  margin: EdgeInsets.only(bottom: 10),
+                                  margin: const EdgeInsets.only(bottom: 10),
                                   child: Row(
                                     children: [
                                       SizedBox(
                                           width: 40,
                                           child: Image.asset(
                                               "assets/images/icons/man.png")),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Expanded(
                                           child: Text(
                                         item.name ?? '',
-                                        style: TextStyle(fontSize: 13),
+                                        style: const TextStyle(fontSize: 13),
                                       )),
                                       Text(
-                                        'Rp${currencyId.format(group.dues ?? 0)}',
-                                        style: TextStyle(
+                                        "Rp${currencyId.format(group.dues ?? 0)}",
+                                        style: const TextStyle(
                                             fontSize: 17,
                                             fontWeight: FontWeight.w500),
                                       )
@@ -383,8 +396,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
-                          margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-                          padding: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15),
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
@@ -393,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.3),
                                   blurRadius: 7,
-                                  offset: Offset(1, 3),
+                                  offset: const Offset(1, 3),
                                 )
                               ],
                               color: Colors.white),
@@ -403,25 +417,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Belum Setor',
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Rp ',
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Text(
                                         '-${currencyId.format(group.totalNotDues)}',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.red),
@@ -431,13 +445,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               )),
                               Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     vertical: 3, horizontal: 5),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     border: Border.all(color: Colors.red)),
                                 child: Row(
-                                  children: [
+                                  children: const [
                                     Icon(
                                       Icons.mail,
                                       color: Colors.red,
@@ -471,8 +485,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
-                          margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-                          padding: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15),
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
@@ -481,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.3),
                                   blurRadius: 7,
-                                  offset: Offset(1, 3),
+                                  offset: const Offset(1, 3),
                                 )
                               ],
                               color: Colors.white),
@@ -495,12 +510,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      const Text(
                                         'Tanggal Kocok Arisan',
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 10,
                                       ),
                                       Row(
@@ -509,14 +524,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Text(
                                             group.periodsDateEn ?? '',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ],
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         height: 5,
                                       ),
                                     ],
@@ -524,9 +539,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   GestureDetector(
                                     onTap: () => _selectDate(context, group),
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           vertical: 3, horizontal: 5),
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.edit_calendar,
                                         color: Colors.grey,
                                       ),
@@ -534,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   )
                                 ],
                               ),
-                              Container(
+                              SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -556,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       }));
                                     },
-                                    child: Text('Lihat Riwayat')),
+                                    child: const Text('Lihat Riwayat')),
                               )
                             ],
                           ),
@@ -577,8 +592,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
-                          margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-                          padding: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.only(
+                              top: 15, left: 15, right: 15),
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 15, vertical: 10),
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
@@ -587,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.3),
                                   blurRadius: 7,
-                                  offset: Offset(1, 3),
+                                  offset: const Offset(1, 3),
                                 )
                               ],
                               color: Colors.white),
@@ -598,12 +614,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Info Group',
                                     style: TextStyle(
                                         color: Colors.grey, fontSize: 12),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 10,
                                   ),
                                   Row(
@@ -614,7 +630,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           group.notes ??
                                               'Informasi group masih kosong!\nTombol edit untuk merubah.',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 15,
                                           ),
                                         ),
@@ -626,9 +642,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               GestureDetector(
                                 onTap: () => _editNotesModal(context, group),
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       vertical: 3, horizontal: 5),
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.edit,
                                     color: Colors.grey,
                                   ),
@@ -677,8 +693,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }));
                                 }
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
+                              child: const Padding(
+                                padding: EdgeInsets.all(12.0),
                                 child: Text('Kocok Arisan Sekarang!'),
                               )),
                         )
@@ -690,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SliverList(delegate: SliverChildListDelegate([])),
               SliverList(
                   delegate: SliverChildListDelegate([
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 )
               ])),
@@ -702,8 +718,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _editNotesModal(BuildContext context, GroupModel group) {
-    TextEditingController _notesController = TextEditingController();
-    _notesController.text = group.notes ?? '';
+    TextEditingController notesController = TextEditingController();
+    notesController.text = group.notes ?? '';
     return showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
@@ -714,8 +730,8 @@ class _HomeScreenState extends State<HomeScreen> {
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
             height: MediaQuery.of(context).size.height * 0.4,
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15),
@@ -723,25 +739,25 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
+                const Text(
                   'Edit Info Group',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
-                Text(
+                const Text(
                   'Ubah info group arisan.',
                   style: TextStyle(fontSize: 14),
                 ),
                 Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
+                    margin: const EdgeInsets.only(left: 5, right: 5),
                     child: TextField(
-                      controller: _notesController,
+                      controller: notesController,
                       maxLines: 2,
                       minLines: 1,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           labelStyle: TextStyle(fontSize: 14),
                           labelText: "Info"),
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 SizedBox(
@@ -757,7 +773,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Navigator.pop(context);
                       context
                           .read<UpdateGroupCubit>()
-                          .updateNoteGroup(group.id!, _notesController.text);
+                          .updateNoteGroup(group.id!, notesController.text);
                     },
                   ),
                 ),
@@ -791,6 +807,7 @@ class _HomeScreenState extends State<HomeScreen> {
       selectedDate = picked;
       String date =
           '${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year.toString().padLeft(2, '0')}';
+      // ignore: use_build_context_synchronously
       context.read<UpdateGroupCubit>().updateDateGroup(group.id!, date);
     }
   }
@@ -810,7 +827,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.width,
                 child: Image.network(

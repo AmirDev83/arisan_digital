@@ -113,7 +113,7 @@ class MemberRepository {
             'status_paid': member.statusPaid,
             'nominal_paid': member.nominalPaid
           }));
-      print(response.body);
+      // print(response.body);
       // Error handling
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);

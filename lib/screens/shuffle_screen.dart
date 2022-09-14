@@ -102,7 +102,7 @@ class _ShuffleScreenState extends State<ShuffleScreen>
       },
       child: Scaffold(
         appBar: AppBar(
-            iconTheme: IconThemeData(color: Colors.white),
+            iconTheme: const IconThemeData(color: Colors.white),
             titleTextStyle: TextStyle(
                 color: Colors.lightBlue.shade800, fontWeight: FontWeight.w500),
             backgroundColor: winner == null
@@ -110,7 +110,7 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                 : Colors.lightGreen.shade800,
             centerTitle: true,
             elevation: 0,
-            title: Text('')),
+            title: const Text('')),
         body: LoaderOverlay(
           useDefaultLoading: false,
           overlayOpacity: 0.6,
@@ -136,7 +136,7 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                         color: winner == null
                             ? Colors.lightBlue.shade800
                             : Colors.lightGreen.shade800,
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(50),
                             bottomRight: Radius.circular(50))),
                     child: Column(
@@ -148,12 +148,12 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                               ? 'Kocok Sekarang!'
                               : 'Selamat Kepada\n🎉🎉🎉\n${winner!.name}',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 25,
                               fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Text(
@@ -162,7 +162,8 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                                   ? 'Tap untuk memulai mengocok!'
                                   : 'Mohon tunggu...'
                               : 'Telah memenangkan arisan hari ini.',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 15),
                         ),
                         const SizedBox(
                           height: 25,
@@ -192,7 +193,7 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                                   )
                                 ],
                               ),
-                        SizedBox(
+                        const SizedBox(
                           height: 25,
                         ),
                         // winner == null
@@ -221,21 +222,17 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                     children: [
                       winner == null
                           ? Expanded(
-                              child: Container(
-                              // margin: const EdgeInsets.symmetric(horizontal: 25),
                               child: LinearProgressIndicator(
-                                minHeight: 25,
-                                color: Colors.lightBlue.shade800,
-                                backgroundColor: Colors.grey.shade300,
-                                value: controller.value,
-                                semanticsLabel: 'Linear progress indicator',
-                              ),
+                              minHeight: 25,
+                              color: Colors.lightBlue.shade800,
+                              backgroundColor: Colors.grey.shade300,
+                              value: controller.value,
+                              semanticsLabel: 'Linear progress indicator',
                             ))
                           : Container(),
                       winner != null
                           ? Expanded(
-                              child: Container(
-                                  child: ElevatedButton(
+                              child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   primary: Colors.white,
                                   onPrimary: winner == null
@@ -250,19 +247,18 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                                               : Colors.lightGreen.shade900)),
                                 ),
                                 onPressed: () => startShuffle(),
-                                child: Text('Ulangi'),
-                              )),
+                                child: const Text('Ulangi'),
+                              ),
                             )
                           : Container(),
                       winner != null
-                          ? SizedBox(
+                          ? const SizedBox(
                               width: 10,
                             )
                           : Container(),
                       winner != null
                           ? Expanded(
-                              child: Container(
-                                  child: ElevatedButton(
+                              child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   primary: winner == null
                                       ? Colors.lightBlue.shade800
@@ -284,8 +280,8 @@ class _ShuffleScreenState extends State<ShuffleScreen>
                                         ),
                                       ));
                                 },
-                                child: Text('Simpan'),
-                              )),
+                                child: const Text('Simpan'),
+                              ),
                             )
                           : Container()
                     ],

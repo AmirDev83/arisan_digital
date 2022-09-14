@@ -26,16 +26,22 @@ class ArisanHistoryModel {
 
 class ArisanHistoryDetail {
   int? id;
-  String? statusPaid, nominalPaid, datePaid;
+  String? statusPaid, nominalPaid, datePaid, statusActive;
   MemberModel? member;
 
   ArisanHistoryDetail(
-      {this.id, this.statusPaid, this.nominalPaid, this.datePaid, this.member});
+      {this.id,
+      this.statusPaid,
+      this.nominalPaid,
+      this.datePaid,
+      this.member,
+      this.statusActive});
 
   factory ArisanHistoryDetail.fromJson(Map<String, dynamic> json) {
     return ArisanHistoryDetail(
         id: json['id'],
         statusPaid: json['status_paid'],
+        statusActive: json['status_active'],
         nominalPaid: json['nominal_paid'],
         datePaid: json['date_paid'],
         member: json['member'] != null

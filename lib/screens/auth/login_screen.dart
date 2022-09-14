@@ -22,7 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   GoogleSignInAccount? _currentUser;
-  AuthRepository _authRepo = AuthRepository();
+  final AuthRepository _authRepo = AuthRepository();
 
   @override
   void initState() {
@@ -71,11 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(''),
+        // title: const Text(''),
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.black,
           ),
@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
             size: 70,
           ),
         ),
-        child: Container(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
@@ -112,17 +112,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 25),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    Text(
+                    const Text(
                       'Pastikan kamu sudah punya akun Google sebelumnya ya.',
                       style: TextStyle(fontSize: 15),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: 25,
                                   child: Image.asset(
                                       'assets/images/icons/google.png')),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               )
             ],

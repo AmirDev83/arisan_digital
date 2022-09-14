@@ -61,7 +61,7 @@ class _StartingScreenState extends State<StartingScreen> {
               size: 70,
             ),
           ),
-          child: Container(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Column(
               children: [
@@ -80,29 +80,29 @@ class _StartingScreenState extends State<StartingScreen> {
                             fontWeight: FontWeight.bold,
                             fontSize: 25),
                       ),
-                      Text(
+                      const Text(
                         'Arisan Digital',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 40),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      const Text(
                         'Kocok arisan jadi lebih mudah dan cepat.',
                         style: TextStyle(fontSize: 15),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      const Text(
                         'Atur anggota arisan ngga ribet.',
                         style: TextStyle(fontSize: 15),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 25,
                       ),
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -114,13 +114,13 @@ class _StartingScreenState extends State<StartingScreen> {
                           onPressed: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: (builder) {
-                              return LoginScreen();
+                              return const LoginScreen();
                             }));
                           },
-                          child: Text('Pengelola'),
+                          child: const Text('Pengelola'),
                         ),
                       ),
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -129,7 +129,7 @@ class _StartingScreenState extends State<StartingScreen> {
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  side: BorderSide(color: Colors.grey)),
+                                  side: const BorderSide(color: Colors.grey)),
                               elevation: 0.5),
                           onPressed: () {},
                           child: Text(
@@ -143,7 +143,7 @@ class _StartingScreenState extends State<StartingScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 )
               ],
