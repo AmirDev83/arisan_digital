@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatefulWidget {
   final GroupModel? group;
@@ -22,6 +23,13 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
   GroupModel? group;
+
+  Future<void> _launchUrl(String url) async {
+    Uri urlParse = Uri.parse(url);
+    if (!await launchUrl(urlParse)) {
+      throw 'Could not launch $urlParse';
+    }
+  }
 
   @override
   void initState() {
@@ -148,12 +156,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         title: const Text('Tentang Aplikasi'),
                       ),
                       ListTile(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (builder) {
-                            return const AboutScreen();
-                          }));
-                        },
+                        onTap: () =>
+                            _launchUrl('https://bit.ly/arisan-digital'),
                         leading: Icon(
                           Icons.comment_outlined,
                           color: Colors.blue.shade700,
@@ -162,12 +166,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         title: const Text('Kritik dan Saran'),
                       ),
                       ListTile(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (builder) {
-                            return const AboutScreen();
-                          }));
-                        },
+                        onTap: () => _launchUrl(
+                            'https://play.google.com/store/apps/details?id=com.caraguna.arisan.digital'),
                         leading: Icon(
                           Icons.star_outline,
                           color: Colors.blue.shade700,

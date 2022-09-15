@@ -69,6 +69,40 @@ class _HistoryScreenState extends State<HistoryScreen> {
                           return Container();
                         } else if (state.arisanHistoryStatus ==
                             ArisanHistoryStatus.success) {
+                          if (state.arisanHistories!.isEmpty) {
+                            return SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.7,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                      width: 200,
+                                      child: Image.asset(
+                                          'assets/images/icons/empty.png')),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    'Uppps, maaf!',
+                                    style: TextStyle(
+                                        color: Colors.grey.shade800,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Riwayat arisan masih kosong!',
+                                    style:
+                                        TextStyle(color: Colors.grey.shade700),
+                                  )
+                                ],
+                              ),
+                            );
+                          }
                           return ListView.builder(
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: state.arisanHistories!.length,

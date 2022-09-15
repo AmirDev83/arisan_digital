@@ -6,6 +6,7 @@ import 'package:arisan_digital/utils/custom_snackbar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MemberScreen extends StatefulWidget {
   final GroupModel? group;
@@ -22,6 +23,13 @@ class _MemberScreenState extends State<MemberScreen> {
 
   final _formKeyCreate = GlobalKey<FormState>();
   final _formKeyUpdate = GlobalKey<FormState>();
+
+  Future<void> _launchUrl(String url) async {
+    Uri urlParse = Uri.parse(url);
+    if (!await launchUrl(urlParse)) {
+      throw 'Could not launch $urlParse';
+    }
+  }
 
   @override
   void initState() {
@@ -237,12 +245,20 @@ class _MemberScreenState extends State<MemberScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                leading: SizedBox(
-                    width: 40,
-                    child: Image.asset("assets/images/icons/man.png")),
-                title: Text(member.name ?? ''),
-                subtitle: Text(member.email ?? (member.noTelp ?? '')),
-              ),
+                  leading: SizedBox(
+                      width: 40,
+                      child: Image.asset("assets/images/icons/man.png")),
+                  title: Text(member.name ?? ''),
+                  subtitle: Text(member.email ?? (member.noTelp ?? '')),
+                  trailing: GestureDetector(
+                    onTap: () =>
+                        _launchUrl('https://wa.me/${member.noWhatsapp}'),
+                    child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Image.asset('assets/images/icons/whatsapp.png'),
+                    ),
+                  )),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: ListTile(

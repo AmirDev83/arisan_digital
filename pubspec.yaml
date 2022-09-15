@@ -32,6 +32,8 @@ dependencies:
   share_plus: ^4.1.0
   flutter_contacts: ^1.1.5
   assets_audio_player: ^3.0.5
+  url_launcher: ^6.1.5
+  qrscan: ^0.3.3
   
   cupertino_icons: ^1.0.2
 
@@ -58,6 +60,8 @@ flutter:
     - assets/images/icons/trophy-circle.png
     - assets/images/icons/trophy-circle-2.png
     - assets/images/icons/trophy-circle-3.png
+    - assets/images/icons/empty.png
+    - assets/images/icons/whatsapp.png
     - assets/images/world-group.png
     - assets/audios/
     - .env

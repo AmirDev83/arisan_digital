@@ -1,5 +1,6 @@
 import 'package:arisan_digital/blocs/auth_bloc/auth_bloc.dart';
 import 'package:arisan_digital/screens/auth/login_screen.dart';
+import 'package:arisan_digital/screens/guests/initial_guest_screen.dart';
 import 'package:arisan_digital/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -131,7 +132,12 @@ class _StartingScreenState extends State<StartingScreen> {
                                   borderRadius: BorderRadius.circular(15.0),
                                   side: const BorderSide(color: Colors.grey)),
                               elevation: 0.5),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (builder) {
+                              return const InitialGuestScreen();
+                            }));
+                          },
                           child: Text(
                             'Peserta',
                             style: TextStyle(
