@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     context.loaderOverlay.show();
     try {
       _currentUser = await _googleSignIn.signIn();
+
       if (_currentUser != null) {
         String? token = await _authRepo.login(
             email: _currentUser?.email,
@@ -55,7 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
         print(error);
       }
     }
-    context.loaderOverlay.hide();
+    if (mounted) {
+      context.loaderOverlay.hide();
+    }
   }
 
   void routeHomeScreen() {

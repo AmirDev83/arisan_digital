@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:permission_handler/permission_handler.dart';
 
 class InitialGuestScreen extends StatefulWidget {
   const InitialGuestScreen({Key? key}) : super(key: key);
@@ -86,6 +87,7 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
                                         color: Colors.lightBlue.shade900)),
                               ),
                               onPressed: () async {
+                                await Permission.camera.request();
                                 String? cameraScanResult = await scanner.scan();
                                 Fluttertoast.showToast(
                                     msg: cameraScanResult ?? 'Failed');
