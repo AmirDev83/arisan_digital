@@ -3,6 +3,7 @@ import 'package:arisan_digital/blocs/groups/delete_group_cubit/delete_group_cubi
 import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
 import 'package:arisan_digital/models/group_model.dart';
+import 'package:arisan_digital/screens/groups/update_group_screen.dart';
 import 'package:arisan_digital/screens/settings/about_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
@@ -133,6 +134,22 @@ class _SettingScreenState extends State<SettingScreen> {
                         },
                       ),
                       ListTile(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return UpdateGroupScreen(
+                              group: group,
+                            );
+                          }));
+                        },
+                        leading: Icon(
+                          Icons.edit_outlined,
+                          color: Colors.blue.shade700,
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        title: const Text('Edit Group'),
+                      ),
+                      ListTile(
                         onTap: () => _showDeleteDialog(context),
                         leading: Icon(
                           Icons.delete_outline,
@@ -156,8 +173,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         title: const Text('Tentang Aplikasi'),
                       ),
                       ListTile(
-                        onTap: () =>
-                            _launchUrl('https://bit.ly/arisan-digital'),
+                        onTap: () => _launchUrl(
+                            'https://docs.google.com/forms/d/e/1FAIpQLSfvdDOqIRCiuGxuqVJ4hMuV_mrjPqfTksbqmIgHgGN_aMGl2A/viewform?usp=sf_link'),
                         leading: Icon(
                           Icons.comment_outlined,
                           color: Colors.blue.shade700,

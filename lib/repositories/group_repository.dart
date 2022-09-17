@@ -8,6 +8,7 @@ import 'package:arisan_digital/utils/generator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GroupRepository {
   final _baseURL = dotenv.env['BASE_URL'].toString();
@@ -86,6 +87,23 @@ class GroupRepository {
     return null;
   }
 
+  Future<GroupModel?> showGuestGroup(String code) async {
+    try {
+      await getToken();
+      final response = await http.get(Uri.parse('$_baseURL/guest/group/$code'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body)['data'];
+        return GroupModel.fromJson(data);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
   Future<ResponseModel?> createGroup(GroupModel group) async {
     try {
       await getToken();
@@ -140,11 +158,10 @@ class GroupRepository {
               },
               body: json.encode({
                 'name': group.name,
-                'periods_type': group.periodsType,
+                'periods_type': periodsTypeEn(group.periodsType ?? ''),
                 'periods_date': group.periodsDate,
                 'dues': group.dues,
-                'target': group.target,
-                'notes': group.notes,
+                'target': group.target ?? '',
               }));
 
       // Error handling
@@ -201,8 +218,6 @@ class GroupRepository {
               body: json.encode({
                 'notes': notes,
               }));
-
-      // print(response.statusCode);
 
       // Error handling
       if (response.statusCode == 200) {
@@ -264,5 +279,21 @@ class GroupRepository {
       }
     }
     return null;
+  }
+
+  Future<String?> getGroupCode() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? groupCode = prefs.getString("group_code");
+    return groupCode;
+  }
+
+  Future setGroupCode(String code) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("group_code", code);
+  }
+
+  Future removeGroupCode() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("group_code");
   }
 }

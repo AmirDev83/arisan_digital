@@ -42,11 +42,11 @@ class ArisanHistoryRepository {
   Future<ResponseModel?> createArisanHistory(
       ArisanHistoryModel arisanHistory) async {
     try {
-      await getToken();
+      // await getToken();
       final response =
           await http.post(Uri.parse('$_baseURL/arisan-history/store'),
               headers: {
-                'Authorization': 'Bearer $_token',
+                // 'Authorization': 'Bearer $_token',
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
               },

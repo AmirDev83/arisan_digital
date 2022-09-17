@@ -1,5 +1,7 @@
 import 'package:arisan_digital/blocs/auth_bloc/auth_bloc.dart';
+import 'package:arisan_digital/repositories/group_repository.dart';
 import 'package:arisan_digital/screens/auth/login_screen.dart';
+import 'package:arisan_digital/screens/guests/guest_home_screen.dart';
 import 'package:arisan_digital/screens/guests/initial_guest_screen.dart';
 import 'package:arisan_digital/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ class StartingScreen extends StatefulWidget {
 }
 
 class _StartingScreenState extends State<StartingScreen> {
+  final GroupRepository _groupRepo = GroupRepository();
   void routeHomeScreen() {
     Navigator.pushAndRemoveUntil<void>(
       context,
@@ -24,10 +27,29 @@ class _StartingScreenState extends State<StartingScreen> {
     );
   }
 
+  void routeGuestGroupScreen(String code) {
+    Navigator.pushAndRemoveUntil<void>(
+      context,
+      MaterialPageRoute<void>(
+          builder: (BuildContext context) => GuestHomeScreen(
+                code: code,
+              )),
+      ModalRoute.withName('/guest-group-screen'),
+    );
+  }
+
+  Future getGroupCode() async {
+    String? code = await _groupRepo.getGroupCode();
+    if (code != null) {
+      routeGuestGroupScreen(code);
+    }
+  }
+
   @override
   void initState() {
-    // context.loaderOverlay.show();
     context.read<AuthBloc>().add(AuthUserFetched());
+
+    getGroupCode();
     super.initState();
   }
 
@@ -43,13 +65,8 @@ class _StartingScreenState extends State<StartingScreen> {
             context.loaderOverlay.hide();
             if (state.authStatus == AuthStatus.authenticated) {
               routeHomeScreen();
-              // Navigator.push(context, MaterialPageRoute(builder: (builder) {
-              //   return const HomeScreen();
-              // }));
             }
           } else {
-            // Show a snackbar
-            //...
             context.loaderOverlay.hide();
           }
         },

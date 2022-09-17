@@ -13,6 +13,6 @@ class CurrencyFormat {
 }
 
 /// Digunakan untuk merubah format angka ke dalam rupiah
-/// Ex. 1000000 menjadi Rp. 1.000.000
+/// Ex. 1000000 menjadi Rp. 1,000,000
 final currencyId =
     NumberFormat.currency(locale: 'EN', symbol: '', decimalDigits: 0);

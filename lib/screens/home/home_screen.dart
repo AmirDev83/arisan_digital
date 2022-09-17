@@ -3,7 +3,7 @@ import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
-import 'package:arisan_digital/screens/create_group_screen.dart';
+import 'package:arisan_digital/screens/groups/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/home/widgets/group_list.dart';
 import 'package:arisan_digital/screens/home/widgets/shimmer_group.dart';
@@ -691,6 +691,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                           .groups[state.selectedIndex],
                                     );
                                   }));
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg:
+                                          'Mohon pastikan semua status member sudah diupdate!');
                                 }
                               },
                               child: const Padding(

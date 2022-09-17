@@ -1,3 +1,5 @@
+import 'package:arisan_digital/models/group_model.dart';
+import 'package:arisan_digital/repositories/group_repository.dart';
 import 'package:arisan_digital/screens/guests/guest_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +17,37 @@ class InitialGuestScreen extends StatefulWidget {
 
 class _InitialGuestScreenState extends State<InitialGuestScreen> {
   final TextEditingController _codeController = TextEditingController();
+  final GroupRepository _groupRepo = GroupRepository();
+
+  Future getGroup(String code) async {
+    context.loaderOverlay.show();
+    GroupModel? group = await _groupRepo.showGuestGroup(code);
+    if (group != null) {
+      await _groupRepo.setGroupCode(code);
+      routeGuestGroupScreen(code);
+    } else {
+      Fluttertoast.showToast(msg: 'Kode group tidak terdaftar.');
+    }
+
+    context.loaderOverlay.hide();
+  }
+
+  void routeGuestGroupScreen(String code) {
+    Navigator.pushAndRemoveUntil<void>(
+      context,
+      MaterialPageRoute<void>(
+          builder: (BuildContext context) => GuestHomeScreen(
+                code: code,
+              )),
+      ModalRoute.withName('/guest-group-screen'),
+    );
+  }
+
+  @override
+  void initState() {
+    _codeController.text = '1BCKcB4c';
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +122,12 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
                               onPressed: () async {
                                 await Permission.camera.request();
                                 String? cameraScanResult = await scanner.scan();
-                                Fluttertoast.showToast(
-                                    msg: cameraScanResult ?? 'Failed');
+                                if (cameraScanResult != null) {
+                                  await getGroup(cameraScanResult);
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: cameraScanResult ?? 'Failed');
+                                }
                               },
                               child: Padding(
                                 padding:
@@ -216,15 +253,9 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
                       ),
                     ),
                     child: const Text('Masuk'),
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pop(context);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (builder) {
-                        return const GuestHomeScreen();
-                      }));
-                      // context
-                      //     .read<UpdateGroupCubit>()
-                      //     .updateNoteGroup(group.id!, notesController.text);
+                      await getGroup(_codeController.text);
                     },
                   ),
                 ),
