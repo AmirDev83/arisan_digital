@@ -301,6 +301,24 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
             ])),
             SliverList(
                 delegate: SliverChildListDelegate([
+              Container(
+                margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                height: MediaQuery.of(context).size.height * 0.25,
+                width: MediaQuery.of(context).size.width,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/banner.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ])),
+            SliverList(
+                delegate: SliverChildListDelegate([
               BlocBuilder<GuestGroupCubit, GuestGroupState>(
                 builder: (context, state) {
                   if (state is GuestGroupDataState) {

@@ -20,8 +20,9 @@ class SelectedGroupCubit extends Cubit<SelectedGroupState> {
     return emit(SelectedGroupState(selectedIndex: index ?? 0, isInit: true));
   }
 
-  void showBalance() async {
-    return emit(const SelectedGroupState()
-        .copyWith(isShowBalance: state.isShowBalance ? false : true));
+  void showBalance(int index) async {
+    return emit(const SelectedGroupState().copyWith(
+        isShowBalance: state.isShowBalance ? false : true,
+        selectedIndex: index));
   }
 }

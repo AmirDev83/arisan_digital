@@ -52,11 +52,13 @@ flutter:
     - assets/images/onboarding/group.png
     - assets/images/onboarding/member.png
     - assets/images/onboarding/reward.png
+    - assets/images/banner.jpg
     - assets/images/icons/google.png
     - assets/images/icons/man.png
     - assets/images/icons/woman.png
     - assets/images/icons/reward.png
     - assets/images/icons/shuffle.png
+    - assets/images/icons/group.png
     - assets/images/icons/trophy.png
     - assets/images/icons/trophy-circle.png
     - assets/images/icons/trophy-circle-2.png

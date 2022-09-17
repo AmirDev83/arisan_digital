@@ -45,7 +45,6 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
 
   @override
   void initState() {
-    _codeController.text = '1BCKcB4c';
     super.initState();
   }
 
@@ -254,8 +253,12 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
                     ),
                     child: const Text('Masuk'),
                     onPressed: () async {
-                      Navigator.pop(context);
-                      await getGroup(_codeController.text);
+                      if (_codeController.text != '') {
+                        Navigator.pop(context);
+                        await getGroup(_codeController.text);
+                      } else {
+                        Fluttertoast.showToast(msg: 'Kode tidak boleh kosong');
+                      }
                     },
                   ),
                 ),

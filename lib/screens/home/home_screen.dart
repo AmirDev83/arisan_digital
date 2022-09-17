@@ -123,7 +123,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           );
                         }
-                        return Container();
+                        return Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (builder) {
+                                    return const SettingScreen();
+                                  }));
+                                },
+                                icon: const Icon(Icons.settings)),
+                          ],
+                        );
                       },
                     ),
                   ],
@@ -266,7 +277,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           GestureDetector(
                                             onTap: () => context
                                                 .read<SelectedGroupCubit>()
-                                                .showBalance(),
+                                                .showBalance(
+                                                    state.selectedIndex),
                                             child: Container(
                                                 margin: const EdgeInsets.only(
                                                     left: 10),
@@ -515,6 +527,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         style: TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
+                                      Text(
+                                        group.periodsType != 'weekly'
+                                            ? '(Mingguan)'
+                                            : group.periodsType == 'monthly'
+                                                ? '(Bulanan)'
+                                                : '(Tahunan)',
+                                        style: const TextStyle(
+                                            color: Colors.grey, fontSize: 12),
+                                      ),
                                       const SizedBox(
                                         height: 10,
                                       ),
@@ -581,6 +602,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
+              SliverList(
+                  delegate: SliverChildListDelegate([
+                Container(
+                  margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: MediaQuery.of(context).size.width,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/images/banner.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ])),
               BlocBuilder<GroupBloc, GroupState>(
                 builder: (context, stateGroup) {
                   if (stateGroup.groups.isEmpty) {
@@ -713,6 +752,54 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 50,
                 )
               ])),
+              BlocBuilder<GroupBloc, GroupState>(
+                  builder: (context, stateGroup) {
+                if (stateGroup.status == GroupStatus.success &&
+                    stateGroup.groups.isEmpty) {
+                  return SliverList(
+                      delegate: SliverChildListDelegate([
+                    Center(
+                        child: SizedBox(
+                            width: 250,
+                            child:
+                                Image.asset('assets/images/icons/group.png'))),
+                    const SizedBox(height: 20),
+                    Text('Selamat Datang!!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.grey.shade800,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25)),
+                    Text('Yuk mulai bikin group barumu sekarang.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                        )),
+                    Container(
+                      margin:
+                          const EdgeInsets.only(top: 15, left: 15, right: 15),
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.blue.shade700,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (builder) {
+                              return const CreateGroupScreen();
+                            }));
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: Text('Tambah Group'),
+                          )),
+                    )
+                  ]));
+                }
+                return SliverList(delegate: SliverChildListDelegate([]));
+              })
             ]),
           ),
         ),

@@ -133,31 +133,35 @@ class _SettingScreenState extends State<SettingScreen> {
                           return Container();
                         },
                       ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (builder) {
-                            return UpdateGroupScreen(
-                              group: group,
-                            );
-                          }));
-                        },
-                        leading: Icon(
-                          Icons.edit_outlined,
-                          color: Colors.blue.shade700,
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        title: const Text('Edit Group'),
-                      ),
-                      ListTile(
-                        onTap: () => _showDeleteDialog(context),
-                        leading: Icon(
-                          Icons.delete_outline,
-                          color: Colors.blue.shade700,
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        title: Text('Hapus group : ${group!.name}'),
-                      ),
+                      group != null
+                          ? ListTile(
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (builder) {
+                                  return UpdateGroupScreen(
+                                    group: group,
+                                  );
+                                }));
+                              },
+                              leading: Icon(
+                                Icons.edit_outlined,
+                                color: Colors.blue.shade700,
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              title: const Text('Edit Group'),
+                            )
+                          : Container(),
+                      group != null
+                          ? ListTile(
+                              onTap: () => _showDeleteDialog(context),
+                              leading: Icon(
+                                Icons.delete_outline,
+                                color: Colors.blue.shade700,
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              title: Text('Hapus group : ${group!.name}'),
+                            )
+                          : Container(),
                       ListTile(
                         onTap: () {
                           Navigator.push(context,
