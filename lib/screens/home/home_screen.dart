@@ -703,7 +703,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 },
               ),
-              SliverList(delegate: SliverChildListDelegate([])),
               SliverList(
                   delegate: SliverChildListDelegate([
                 const SizedBox(
