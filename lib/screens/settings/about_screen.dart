@@ -30,13 +30,22 @@ class _AboutScreenState extends State<AboutScreen> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(bottom: 20),
-                  child: const Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget accumsan ex. Donec faucibus elementum nulla sed ullamcorper. Fusce urna nisi, tincidunt vitae lectus ut, tristique egestas elit. Nam ac diam quis leo tincidunt convallis in nec sem. Nam maximus purus velit, non efficitur purus placerat eu. Nam mauris dui, tempus eget tortor nec, imperdiet accumsan lacus.'),
+                  child: Text(
+                    'Arisan Digital Online adalah aplikasi untuk mengelola arisan kamu menjadi lebih mudah dan cepat. Dengan menggunakan aplikasi Arisan Digital, kamu dapat melihat data-data arisan dimanapun dan kapan pun, jadi kamu tidak perlu membawa buku arisan secara fisik.',
+                    style: TextStyle(color: Colors.grey.shade800),
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(bottom: 20),
-                  child: const Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eget accumsan ex. Donec faucibus elementum nulla sed ullamcorper. Fusce urna nisi, tincidunt vitae lectus ut, tristique egestas elit. Nam ac diam quis leo tincidunt convallis in nec sem. Nam maximus purus velit, non efficitur purus placerat eu. Nam mauris dui, tempus eget tortor nec, imperdiet accumsan lacus.'),
+                  child: Text(
+                      'Kocok pemenang arisan hanya dengan sekali klik saja, maka aplikasi akan mencarikan pemenang untuk arisan. Kamu tidak perlu lagi repot-repot membuat kertas kocokan untuk mendapat kan pemenang arisan dalam periode tertentu.',
+                      style: TextStyle(color: Colors.grey.shade800)),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: Text(
+                      'Lihat riwayat hasil pemenang arisan pada periode tertentu lebih mudah. Bahkan, semua anggota dapat melihat detail tentang arisan yang kamu kelola.',
+                      style: TextStyle(color: Colors.grey.shade800)),
                 ),
               ],
             ),

@@ -4,13 +4,17 @@ import 'package:arisan_digital/repositories/group_repository.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/currency_format.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
+
+enum StatusAd { initial, loaded }
 
 class GuestHomeScreen extends StatefulWidget {
   final String? code;
@@ -33,6 +37,22 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
     );
   }
 
+  BannerAd? myBanner;
+
+  StatusAd statusAd = StatusAd.initial;
+
+  BannerAdListener listener() => BannerAdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) {
+          if (kDebugMode) {
+            print('Ad Loaded.');
+          }
+          setState(() {
+            statusAd = StatusAd.loaded;
+          });
+        },
+      );
+
   Future closeGroup() async {
     context.loaderOverlay.show();
     await _groupRepo.removeGroupCode();
@@ -44,6 +64,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
   @override
   void initState() {
     context.read<GuestGroupCubit>().getGuestGroup(widget.code ?? '');
+
+    myBanner = BannerAd(
+      // test banner
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+
+      // adUnitId: 'ca-app-pub-2465007971338713/9541338432',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: listener(),
+    );
+    myBanner!.load();
     super.initState();
   }
 
@@ -206,7 +237,17 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
                     ),
                   )
                 ],
-              )
+              ),
+              statusAd == StatusAd.loaded
+                  ? Container(
+                      margin:
+                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      alignment: Alignment.center,
+                      width: myBanner!.size.width.toDouble(),
+                      height: myBanner!.size.height.toDouble(),
+                      child: AdWidget(ad: myBanner!),
+                    )
+                  : Container(),
             ])),
             SliverList(
                 delegate: SliverChildListDelegate([
@@ -303,7 +344,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
                 delegate: SliverChildListDelegate([
               Container(
                 margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                height: MediaQuery.of(context).size.height * 0.25,
+                height: MediaQuery.of(context).size.height * 0.20,
                 width: MediaQuery.of(context).size.width,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,

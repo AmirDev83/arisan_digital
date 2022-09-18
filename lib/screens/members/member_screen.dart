@@ -616,120 +616,125 @@ class _MemberScreenState extends State<MemberScreen> {
           child: Form(
             key: _formKeyCreate,
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    'Tambah Anggota',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  ),
-                  const Text(
-                    'Masukkan data anggota arisan.',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: _nameController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Nama anggota tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "Nama Anggota"),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: _emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Email tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                            helperText:
-                                "* Notifikasi akan dikirimkan melalui email.",
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "Email (Opsional)"),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: _noTelpController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'No telp tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "No Telp (Whatsapp)"),
-                      )),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+              child: Wrap(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'Tambah Anggota',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                      const Text(
+                        'Masukkan data anggota arisan.',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: _nameController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Nama anggota tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "Nama Anggota"),
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: _emailController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Email tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                helperText:
+                                    "* Notifikasi akan dikirimkan melalui email.",
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "Email (Opsional)"),
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: _noTelpController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'No telp tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "No Telp (Whatsapp)"),
+                          )),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          child: const Text('Simpan'),
+                          onPressed: () {
+                            if (_formKeyCreate.currentState!.validate()) {
+                              Navigator.pop(context);
+                              context.read<MemberCubit>().createMember(
+                                  MemberModel(
+                                      group: widget.group,
+                                      name: _nameController.text,
+                                      email: _emailController.text,
+                                      noTelp: _noTelpController.text));
+                            }
+                            // Navigator.push(context,
+                            //     MaterialPageRoute(builder: (builder) {
+                            //   return ContactScreen();
+                            // }));
+                          },
                         ),
                       ),
-                      child: const Text('Simpan'),
-                      onPressed: () {
-                        if (_formKeyCreate.currentState!.validate()) {
-                          Navigator.pop(context);
-                          context.read<MemberCubit>().createMember(MemberModel(
-                              group: widget.group,
-                              name: _nameController.text,
-                              email: _emailController.text,
-                              noTelp: _noTelpController.text));
-                        }
-                        // Navigator.push(context,
-                        //     MaterialPageRoute(builder: (builder) {
-                        //   return ContactScreen();
-                        // }));
-                      },
-                    ),
+                      // Container(
+                      //     margin: EdgeInsets.symmetric(vertical: 15),
+                      //     child: Center(child: const Text('Atau'))),
+                      // Container(
+                      //   width: MediaQuery.of(context).size.width,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //       primary: Colors.white,
+                      //       onPrimary: Colors.lightBlue[700],
+                      //       shadowColor: Colors.transparent,
+                      //       shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(20.0),
+                      //           side: BorderSide(color: Colors.lightBlue.shade800)),
+                      //     ),
+                      //     child: const Text('Tambahkan dari Contact'),
+                      //     onPressed: () {
+                      //       Navigator.push(context,
+                      //           MaterialPageRoute(builder: (builder) {
+                      //         return ContactScreen();
+                      //       }));
+                      //     },
+                      //   ),
+                      // )
+                    ],
                   ),
-                  // Container(
-                  //     margin: EdgeInsets.symmetric(vertical: 15),
-                  //     child: Center(child: const Text('Atau'))),
-                  // Container(
-                  //   width: MediaQuery.of(context).size.width,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       primary: Colors.white,
-                  //       onPrimary: Colors.lightBlue[700],
-                  //       shadowColor: Colors.transparent,
-                  //       shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(20.0),
-                  //           side: BorderSide(color: Colors.lightBlue.shade800)),
-                  //     ),
-                  //     child: const Text('Tambahkan dari Contact'),
-                  //     onPressed: () {
-                  //       Navigator.push(context,
-                  //           MaterialPageRoute(builder: (builder) {
-                  //         return ContactScreen();
-                  //       }));
-                  //     },
-                  //   ),
-                  // )
                 ],
               ),
             ),
@@ -758,118 +763,123 @@ class _MemberScreenState extends State<MemberScreen> {
           child: Form(
             key: _formKeyUpdate,
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text(
-                    'Update Anggota',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  ),
-                  const Text(
-                    'Masukkan data anggota arisan.',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: nameEditController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Nama anggota tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "Nama Anggota"),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: emailEditController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Email tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                            helperText:
-                                "* Notifikasi akan dikirimkan melalui email.",
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "Email (Opsional)"),
-                      )),
-                  Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
-                      child: TextFormField(
-                        controller: noTelpEditController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'No telp tidak boleh kosong.';
-                          }
-                          return null;
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                            labelStyle: TextStyle(fontSize: 14),
-                            labelText: "No Telp (Whatsapp)"),
-                      )),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                  SizedBox(
-                    // margin: EdgeInsets.all(15),
-                    width: MediaQuery.of(context).size.width,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+              child: Wrap(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'Update Anggota',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w500),
+                      ),
+                      const Text(
+                        'Masukkan data anggota arisan.',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: nameEditController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Nama anggota tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "Nama Anggota"),
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: emailEditController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Email tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                                helperText:
+                                    "* Notifikasi akan dikirimkan melalui email.",
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "Email (Opsional)"),
+                          )),
+                      Container(
+                          margin: const EdgeInsets.only(left: 5, right: 5),
+                          child: TextFormField(
+                            controller: noTelpEditController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'No telp tidak boleh kosong.';
+                              }
+                              return null;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                                labelStyle: TextStyle(fontSize: 14),
+                                labelText: "No Telp (Whatsapp)"),
+                          )),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      SizedBox(
+                        // margin: EdgeInsets.all(15),
+                        width: MediaQuery.of(context).size.width,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          child: const Text('Simpan'),
+                          onPressed: () {
+                            if (_formKeyUpdate.currentState!.validate()) {
+                              Navigator.pop(context);
+                              context.read<MemberCubit>().updateMember(
+                                  MemberModel(
+                                      id: member.id!,
+                                      group: widget.group,
+                                      name: nameEditController.text,
+                                      email: emailEditController.text,
+                                      noTelp: noTelpEditController.text));
+                            }
+                          },
                         ),
                       ),
-                      child: const Text('Simpan'),
-                      onPressed: () {
-                        if (_formKeyUpdate.currentState!.validate()) {
-                          Navigator.pop(context);
-                          context.read<MemberCubit>().updateMember(MemberModel(
-                              id: member.id!,
-                              group: widget.group,
-                              name: nameEditController.text,
-                              email: emailEditController.text,
-                              noTelp: noTelpEditController.text));
-                        }
-                      },
-                    ),
+                      // Container(
+                      //     margin: EdgeInsets.symmetric(vertical: 15),
+                      //     child: Center(child: const Text('Atau'))),
+                      // Container(
+                      //   width: MediaQuery.of(context).size.width,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //       primary: Colors.white,
+                      //       onPrimary: Colors.lightBlue[700],
+                      //       shadowColor: Colors.transparent,
+                      //       shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(20.0),
+                      //           side: BorderSide(color: Colors.lightBlue.shade800)),
+                      //     ),
+                      //     child: const Text('Tambahkan dari Contact'),
+                      //     onPressed: () {
+                      //       Navigator.push(context,
+                      //           MaterialPageRoute(builder: (builder) {
+                      //         return ContactScreen();
+                      //       }));
+                      //     },
+                      //   ),
+                      // )
+                    ],
                   ),
-                  // Container(
-                  //     margin: EdgeInsets.symmetric(vertical: 15),
-                  //     child: Center(child: const Text('Atau'))),
-                  // Container(
-                  //   width: MediaQuery.of(context).size.width,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       primary: Colors.white,
-                  //       onPrimary: Colors.lightBlue[700],
-                  //       shadowColor: Colors.transparent,
-                  //       shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(20.0),
-                  //           side: BorderSide(color: Colors.lightBlue.shade800)),
-                  //     ),
-                  //     child: const Text('Tambahkan dari Contact'),
-                  //     onPressed: () {
-                  //       Navigator.push(context,
-                  //           MaterialPageRoute(builder: (builder) {
-                  //         return ContactScreen();
-                  //       }));
-                  //     },
-                  //   ),
-                  // )
                 ],
               ),
             ),

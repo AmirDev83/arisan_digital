@@ -13,14 +13,18 @@ import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:arisan_digital/utils/currency_format.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
+
+enum StatusAd { initial, loaded }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -34,10 +38,42 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
   DateTime now = DateTime.now();
 
+  BannerAd? myBanner;
+
+  StatusAd statusAd = StatusAd.initial;
+
+  BannerAdListener listener() => BannerAdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) {
+          if (kDebugMode) {
+            print('Ad Loaded.');
+          }
+          setState(() {
+            statusAd = StatusAd.loaded;
+          });
+        },
+      );
+
   @override
   void initState() {
     context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
+    myBanner = BannerAd(
+      // test banner
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+
+      // adUnitId: 'ca-app-pub-2465007971338713/9541338432',
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: listener(),
+    );
+    myBanner!.load();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    myBanner!.dispose();
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -92,6 +128,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           return BlocBuilder<SelectedGroupCubit,
                               SelectedGroupState>(
                             builder: (context, state) {
+                              int selectedIndex = state.selectedIndex;
+                              // Kondisi ketika ada user login di 2 device yang sama,
+                              // Yang satu menghapus groups,
+                              // Sedangkan yang satunya masih menyimpan data selected index
+                              if (state.selectedIndex >=
+                                  stateGroup.groups.length) {
+                                selectedIndex = 0;
+                                context
+                                    .read<SelectedGroupCubit>()
+                                    .setSelectedIndex(0);
+                              }
                               return Row(
                                 children: [
                                   IconButton(
@@ -101,23 +148,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 builder: (builder) {
                                           return SettingScreen(
                                             group: stateGroup
-                                                .groups[state.selectedIndex],
+                                                .groups[selectedIndex],
                                           );
                                         }));
                                       },
                                       icon: const Icon(Icons.settings)),
                                   IconButton(
-                                      onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (builder) {
-                                          return MemberScreen(
-                                            group: stateGroup
-                                                .groups[state.selectedIndex],
-                                          );
-                                        }));
-                                      },
-                                      icon: const Icon(Icons.person_add))
+                                    onPressed: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (builder) {
+                                        return MemberScreen(
+                                          group:
+                                              stateGroup.groups[selectedIndex],
+                                        );
+                                      }));
+                                    },
+                                    icon: const Icon(
+                                        Icons.app_registration_rounded),
+                                  )
                                 ],
                               );
                             },
@@ -224,8 +272,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         return BlocBuilder<SelectedGroupCubit,
                             SelectedGroupState>(
                           builder: (context, state) {
-                            GroupModel group =
-                                stateGroup.groups[state.selectedIndex];
+                            int selectedIndex = state.selectedIndex;
+                            // Kondisi ketika ada user login di 2 device yang sama,
+                            // Yang satu menghapus groups,
+                            // Sedangkan yang satunya masih menyimpan data selected index
+                            if (state.selectedIndex >=
+                                stateGroup.groups.length) {
+                              selectedIndex = 0;
+                              context
+                                  .read<SelectedGroupCubit>()
+                                  .setSelectedIndex(0);
+                            }
+                            GroupModel group = stateGroup.groups[selectedIndex];
                             return Container(
                               margin: const EdgeInsets.only(
                                   top: 55, left: 15, right: 15),
@@ -277,8 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           GestureDetector(
                                             onTap: () => context
                                                 .read<SelectedGroupCubit>()
-                                                .showBalance(
-                                                    state.selectedIndex),
+                                                .showBalance(selectedIndex),
                                             child: Container(
                                                 margin: const EdgeInsets.only(
                                                     left: 10),
@@ -306,7 +363,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                   ],
-                )
+                ),
+                statusAd == StatusAd.loaded
+                    ? Container(
+                        margin:
+                            const EdgeInsets.only(left: 15, right: 15, top: 15),
+                        alignment: Alignment.center,
+                        width: myBanner!.size.width.toDouble(),
+                        height: myBanner!.size.height.toDouble(),
+                        child: AdWidget(ad: myBanner!),
+                      )
+                    : Container(),
               ])),
               BlocBuilder<GroupBloc, GroupState>(
                 builder: (context, stateGroup) {
@@ -315,7 +382,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
                     builder: (context, state) {
-                      GroupModel group = stateGroup.groups[state.selectedIndex];
+                      int selectedIndex = state.selectedIndex;
+                      // Kondisi ketika ada user login di 2 device yang sama,
+                      // Yang satu menghapus groups,
+                      // Sedangkan yang satunya masih menyimpan data selected index
+                      if (state.selectedIndex >= stateGroup.groups.length) {
+                        selectedIndex = 0;
+                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                      }
+                      GroupModel group = stateGroup.groups[selectedIndex];
                       if ((group.lastPaidMembers ?? []).isEmpty) {
                         return SliverList(
                             delegate: SliverChildListDelegate([]));
@@ -404,7 +479,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
                     builder: (context, state) {
-                      GroupModel group = stateGroup.groups[state.selectedIndex];
+                      int selectedIndex = state.selectedIndex;
+                      // Kondisi ketika ada user login di 2 device yang sama,
+                      // Yang satu menghapus groups,
+                      // Sedangkan yang satunya masih menyimpan data selected index
+                      if (state.selectedIndex >= stateGroup.groups.length) {
+                        selectedIndex = 0;
+                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                      }
+                      GroupModel group = stateGroup.groups[selectedIndex];
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
@@ -493,7 +576,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
                     builder: (context, state) {
-                      GroupModel group = stateGroup.groups[state.selectedIndex];
+                      int selectedIndex = state.selectedIndex;
+                      // Kondisi ketika ada user login di 2 device yang sama,
+                      // Yang satu menghapus groups,
+                      // Sedangkan yang satunya masih menyimpan data selected index
+                      if (state.selectedIndex >= stateGroup.groups.length) {
+                        selectedIndex = 0;
+                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                      }
+                      GroupModel group = stateGroup.groups[selectedIndex];
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
@@ -606,7 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   delegate: SliverChildListDelegate([
                 Container(
                   margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                  height: MediaQuery.of(context).size.height * 0.25,
+                  height: MediaQuery.of(context).size.height * 0.20,
                   width: MediaQuery.of(context).size.width,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -627,7 +718,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
                     builder: (context, state) {
-                      GroupModel group = stateGroup.groups[state.selectedIndex];
+                      int selectedIndex = state.selectedIndex;
+                      // Kondisi ketika ada user login di 2 device yang sama,
+                      // Yang satu menghapus groups,
+                      // Sedangkan yang satunya masih menyimpan data selected index
+                      if (state.selectedIndex >= stateGroup.groups.length) {
+                        selectedIndex = 0;
+                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                      }
+                      GroupModel group = stateGroup.groups[selectedIndex];
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
@@ -704,7 +803,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                   return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
                     builder: (context, state) {
-                      GroupModel group = stateGroup.groups[state.selectedIndex];
+                      int selectedIndex = state.selectedIndex;
+                      // Kondisi ketika ada user login di 2 device yang sama,
+                      // Yang satu menghapus groups,
+                      // Sedangkan yang satunya masih menyimpan data selected index
+                      if (state.selectedIndex >= stateGroup.groups.length) {
+                        selectedIndex = 0;
+                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                      }
+                      GroupModel group = stateGroup.groups[selectedIndex];
                       return SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
@@ -724,10 +831,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (builder) {
                                     return ShuffleScreen(
-                                      members: stateGroup
-                                          .groups[state.selectedIndex].members,
-                                      group: stateGroup
-                                          .groups[state.selectedIndex],
+                                      members: group.members,
+                                      group: group,
                                     );
                                   }));
                                 } else {
@@ -819,53 +924,57 @@ class _HomeScreenState extends State<HomeScreen> {
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.4,
             padding: const EdgeInsets.all(20),
             decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15))),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  'Edit Info Group',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-                const Text(
-                  'Ubah info group arisan.',
-                  style: TextStyle(fontSize: 14),
-                ),
-                Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5),
-                    child: TextField(
-                      controller: notesController,
-                      maxLines: 2,
-                      minLines: 1,
-                      decoration: const InputDecoration(
-                          labelStyle: TextStyle(fontSize: 14),
-                          labelText: "Info"),
-                    )),
-                const SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+            child: Wrap(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Edit Info Group',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    const Text(
+                      'Ubah info group arisan.',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, right: 5),
+                        child: TextField(
+                          controller: notesController,
+                          maxLines: 2,
+                          minLines: 1,
+                          decoration: const InputDecoration(
+                              labelStyle: TextStyle(fontSize: 14),
+                              labelText: "Info"),
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Simpan'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context
+                              .read<UpdateGroupCubit>()
+                              .updateNoteGroup(group.id!, notesController.text);
+                        },
                       ),
                     ),
-                    child: const Text('Simpan'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      context
-                          .read<UpdateGroupCubit>()
-                          .updateNoteGroup(group.id!, notesController.text);
-                    },
-                  ),
+                  ],
                 ),
               ],
             ),

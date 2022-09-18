@@ -41,6 +41,14 @@ class _GroupListState extends State<GroupList> {
                 // shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemBuilder: ((context, index) {
+                  int selectedIndex = state.selectedIndex;
+                  // Kondisi ketika ada user login di 2 device yang sama,
+                  // Yang satu menghapus groups,
+                  // Sedangkan yang satunya masih menyimpan data selected index
+                  if (state.selectedIndex >= widget.groups!.length) {
+                    selectedIndex = 0;
+                    context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                  }
                   return GestureDetector(
                     onTap: () => context
                         .read<SelectedGroupCubit>()
@@ -51,7 +59,7 @@ class _GroupListState extends State<GroupList> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 5, horizontal: 10),
                         decoration: BoxDecoration(
-                            color: index == state.selectedIndex
+                            color: index == selectedIndex
                                 ? Colors.white.withOpacity(0.2)
                                 : null,
                             borderRadius: BorderRadius.circular(10)),

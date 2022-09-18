@@ -214,53 +214,58 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.4,
             padding: const EdgeInsets.all(20),
             decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15),
                     topRight: Radius.circular(15))),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Text(
-                  'Kode Group',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-                const Text(
-                  'Masukkan kode group kamu yang terdaftar.',
-                  style: TextStyle(fontSize: 14),
-                ),
-                Container(
-                    margin: const EdgeInsets.only(left: 5, right: 5),
-                    child: TextField(
-                      controller: _codeController,
-                      decoration: const InputDecoration(
-                          labelStyle: TextStyle(fontSize: 14),
-                          labelText: "Kode Group"),
-                    )),
-                const SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+            child: Wrap(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Kode Group',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    const Text(
+                      'Masukkan kode group kamu yang terdaftar.',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, right: 5),
+                        child: TextField(
+                          controller: _codeController,
+                          decoration: const InputDecoration(
+                              labelStyle: TextStyle(fontSize: 14),
+                              labelText: "Kode Group"),
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Masuk'),
+                        onPressed: () async {
+                          if (_codeController.text != '') {
+                            Navigator.pop(context);
+                            await getGroup(_codeController.text);
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Kode tidak boleh kosong');
+                          }
+                        },
                       ),
                     ),
-                    child: const Text('Masuk'),
-                    onPressed: () async {
-                      if (_codeController.text != '') {
-                        Navigator.pop(context);
-                        await getGroup(_codeController.text);
-                      } else {
-                        Fluttertoast.showToast(msg: 'Kode tidak boleh kosong');
-                      }
-                    },
-                  ),
+                  ],
                 ),
               ],
             ),
