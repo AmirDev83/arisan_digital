@@ -54,6 +54,8 @@ flutter:
     - assets/images/onboarding/member.png
     - assets/images/onboarding/reward.png
     - assets/images/banner.jpg
+    - assets/images/arisan-blue.png
+    - assets/images/arisan-white.png
     - assets/images/icons/google.png
     - assets/images/icons/man.png
     - assets/images/icons/woman.png

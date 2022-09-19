@@ -3,6 +3,8 @@ import 'package:arisan_digital/blocs/home/group_bloc/group_bloc.dart';
 import 'package:arisan_digital/blocs/home/selected_group_cubit/selected_group_cubit.dart';
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
+import 'package:arisan_digital/models/response_model.dart';
+import 'package:arisan_digital/repositories/member_repository.dart';
 import 'package:arisan_digital/screens/groups/create_group_screen.dart';
 import 'package:arisan_digital/screens/history_screen.dart';
 import 'package:arisan_digital/screens/home/widgets/group_list.dart';
@@ -37,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Date Picker
   DateTime selectedDate = DateTime.now();
   DateTime now = DateTime.now();
+  final MemberRepository _memberRepo = MemberRepository();
 
   BannerAd? myBanner;
 
@@ -53,6 +56,27 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
       );
+
+  Future sendRemainder(int groupId) async {
+    context.loaderOverlay.show();
+    ResponseModel? response = await _memberRepo.sendRemainder(groupId);
+    context.loaderOverlay.hide();
+    if (response == null) {
+      // ignore: use_build_context_synchronously
+      return CustomSnackbar.awesome(context,
+          message: 'Terjadi kesalahan, silahkan coba kembali.',
+          type: ContentType.failure);
+    }
+
+    if (response.status == 'failure') {
+      // ignore: use_build_context_synchronously
+      return CustomSnackbar.awesome(context,
+          message: response.message ?? '', type: ContentType.failure);
+    }
+    // ignore: use_build_context_synchronously
+    return CustomSnackbar.awesome(context,
+        message: response.message ?? '', type: ContentType.success);
+  }
 
   @override
   void initState() {
@@ -186,7 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                   ],
-                  title: const Text('Arisan Digital')),
+                  // title: const Text('Arisan Digital')
+                  title: SizedBox(
+                      height: 35,
+                      child: Image.asset('assets/images/arisan-white.png'))),
               SliverList(
                   delegate: SliverChildListDelegate([
                 Stack(
@@ -539,26 +566,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ],
                               )),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 3, horizontal: 5),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: Colors.red)),
-                                child: Row(
-                                  children: const [
-                                    Icon(
-                                      Icons.mail,
-                                      color: Colors.red,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'Tagih',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.red),
-                                    )
-                                  ],
+                              GestureDetector(
+                                onTap: () => _showSendRemainderDialog(
+                                    context, group.id!),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 3, horizontal: 5),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.red)),
+                                  child: Row(
+                                    children: const [
+                                      Icon(
+                                        Icons.mail,
+                                        color: Colors.red,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Tagih',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.red),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               )
                             ],
@@ -863,12 +894,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     stateGroup.groups.isEmpty) {
                   return SliverList(
                       delegate: SliverChildListDelegate([
-                    Center(
-                        child: SizedBox(
-                            width: 250,
-                            child:
-                                Image.asset('assets/images/icons/group.png'))),
-                    const SizedBox(height: 20),
+                    // Center(
+                    //     child: SizedBox(
+                    //         width: 250,
+                    //         child:
+                    //             Image.asset('assets/images/icons/group.png'))),
+                    // const SizedBox(height: 20),
                     Text('Selamat Datang!!',
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -881,8 +912,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.shade800,
                         )),
                     Container(
-                      margin:
-                          const EdgeInsets.only(top: 15, left: 15, right: 15),
+                      margin: const EdgeInsets.only(
+                          top: 15, left: 15, right: 15, bottom: 25),
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             primary: Colors.blue.shade700,
@@ -1073,6 +1104,49 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showSendRemainderDialog(
+      BuildContext context, int groupId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Tagih',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const [
+                Text(
+                    'Apakah kamu yakin ingin mengirim pesan ke semua anggota group yang belum bayar?'),
+                Text('* Pesan akan dikirim melalui email',
+                    style: TextStyle(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.white),
+              child: const Text('Batal', style: TextStyle(color: Colors.black)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(primary: Colors.blue.shade700),
+              child: const Text('Kirim', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                sendRemainder(groupId);
+              },
+            ),
+          ],
         );
       },
     );

@@ -199,4 +199,27 @@ class MemberRepository {
     }
     return null;
   }
+
+  Future<ResponseModel?> sendRemainder(int groupId) async {
+    await getToken();
+    try {
+      final response = await http.post(
+          Uri.parse('$_baseURL/members/mail/reminder/$groupId'),
+          headers: {
+            'Authorization': 'Bearer $_token',
+            'Accept': 'application/json'
+          });
+
+      // Error handling
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        return ResponseModel.fromJson(jsonResponse);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
 }
