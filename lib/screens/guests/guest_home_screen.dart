@@ -67,9 +67,9 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
 
     myBanner = BannerAd(
       // test banner
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      // adUnitId: 'ca-app-pub-3940256099942544/6300978111',
 
-      // adUnitId: 'ca-app-pub-2465007971338713/9541338432',
+      adUnitId: 'ca-app-pub-2465007971338713/9541338432',
       size: AdSize.banner,
       request: const AdRequest(),
       listener: listener(),

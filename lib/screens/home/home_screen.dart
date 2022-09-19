@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           type: ContentType.failure);
     }
 
-    if (response.status == 'failure') {
+    if (response.status == 'failed') {
       // ignore: use_build_context_synchronously
       return CustomSnackbar.awesome(context,
           message: response.message ?? '', type: ContentType.failure);
@@ -83,9 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
     myBanner = BannerAd(
       // test banner
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      // adUnitId: 'ca-app-pub-3940256099942544/6300978111',
 
-      // adUnitId: 'ca-app-pub-2465007971338713/9541338432',
+      adUnitId: 'ca-app-pub-2465007971338713/9541338432',
       size: AdSize.banner,
       request: const AdRequest(),
       listener: listener(),
@@ -650,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             color: Colors.grey, fontSize: 12),
                                       ),
                                       Text(
-                                        group.periodsType != 'weekly'
+                                        group.periodsType == 'weekly'
                                             ? '(Mingguan)'
                                             : group.periodsType == 'monthly'
                                                 ? '(Bulanan)'
