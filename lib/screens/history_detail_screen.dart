@@ -128,8 +128,10 @@ class _HistoryDetailScreenState extends State<HistoryDetailScreen> {
                         children: [
                           SizedBox(
                               width: 40,
-                              child:
-                                  Image.asset("assets/images/icons/man.png")),
+                              child: arisanHistoryDetail.member!.gender ==
+                                      'female'
+                                  ? Image.asset("assets/images/icons/woman.png")
+                                  : Image.asset("assets/images/icons/man.png")),
                           arisanHistoryDetail.member!.id! ==
                                   widget.arisanHistory!.winner!.id!
                               ? Container(

@@ -478,8 +478,11 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
                                     children: [
                                       SizedBox(
                                           width: 40,
-                                          child: Image.asset(
-                                              "assets/images/icons/man.png")),
+                                          child: member.gender == 'female'
+                                              ? Image.asset(
+                                                  "assets/images/icons/woman.png")
+                                              : Image.asset(
+                                                  "assets/images/icons/man.png")),
                                       member.isGetReward!
                                           ? Container(
                                               width: 20,
@@ -526,7 +529,7 @@ class _GuestHomeScreenState extends State<GuestHomeScreen> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  member.statusActive != 'unpaid'
+                                  member.statusPaid != 'unpaid'
                                       ? ElevatedButton(
                                           style: ElevatedButton.styleFrom(
                                             primary: member.statusPaid == 'paid'

@@ -2,7 +2,14 @@ import 'package:arisan_digital/models/group_model.dart';
 
 class MemberModel {
   int? id, nominalPaid;
-  String? name, noTelp, noWhatsapp, email, datePaid, statusPaid, statusActive;
+  String? name,
+      noTelp,
+      noWhatsapp,
+      email,
+      datePaid,
+      statusPaid,
+      statusActive,
+      gender;
   bool? canDelete, isGetReward;
   GroupModel? group;
 
@@ -18,6 +25,7 @@ class MemberModel {
       this.statusPaid,
       this.isGetReward,
       this.nominalPaid,
+      this.gender,
       this.statusActive});
 
   factory MemberModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +39,7 @@ class MemberModel {
         email: json['email'],
         isGetReward: json['is_get_reward'] == 1 ? true : false,
         canDelete: json['can_delete'],
+        gender: json['gender'],
         datePaid: json['date_paid'],
         statusPaid: json['status_paid'],
         nominalPaid: json['nominal_paid'],

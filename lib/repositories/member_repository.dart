@@ -28,6 +28,7 @@ class MemberRepository {
           body: json.encode({
             'group_id': member.group!.id,
             'name': member.name,
+            'gender': _gender(member.gender ?? ''),
             'no_telp': member.noTelp,
             'no_whatsapp': member.noTelp,
             // 'no_whatsapp': member.noWhatsapp,
@@ -44,6 +45,11 @@ class MemberRepository {
       }
     }
     return null;
+  }
+
+  String _gender(String param) {
+    if (param == 'Laki-laki') return 'male';
+    return 'female';
   }
 
   Future<MemberModel?> showMember(int id) async {
@@ -81,6 +87,7 @@ class MemberRepository {
                 'name': member.name,
                 'no_telp': member.noTelp,
                 'no_whatsapp': member.noTelp,
+                'gender': _gender(member.gender ?? ''),
                 // 'no_whatsapp': member.noWhatsapp,
                 'email': member.email,
               }));

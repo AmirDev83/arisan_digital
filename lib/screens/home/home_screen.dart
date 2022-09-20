@@ -472,8 +472,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       SizedBox(
                                           width: 40,
-                                          child: Image.asset(
-                                              "assets/images/icons/man.png")),
+                                          child: item.gender == 'female'
+                                              ? Image.asset(
+                                                  "assets/images/icons/woman.png")
+                                              : Image.asset(
+                                                  "assets/images/icons/man.png")),
                                       const SizedBox(
                                         width: 10,
                                       ),
