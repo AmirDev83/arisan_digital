@@ -1,10 +1,9 @@
 import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/repositories/group_repository.dart';
 import 'package:arisan_digital/screens/guests/guest_home_screen.dart';
+import 'package:arisan_digital/utils/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,7 +19,7 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
   final GroupRepository _groupRepo = GroupRepository();
 
   Future getGroup(String code) async {
-    context.loaderOverlay.show();
+    LoadingOverlay.show(context);
     GroupModel? group = await _groupRepo.showGuestGroup(code);
     if (group != null) {
       await _groupRepo.setGroupCode(code);
@@ -29,7 +28,7 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
       Fluttertoast.showToast(msg: 'Kode group tidak terdaftar.');
     }
 
-    context.loaderOverlay.hide();
+    if (mounted) LoadingOverlay.hide(context);
   }
 
   void routeGuestGroupScreen(String code) {
@@ -66,139 +65,130 @@ class _InitialGuestScreenState extends State<InitialGuestScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: LoaderOverlay(
-        useDefaultLoading: false,
-        overlayWidget: Center(
-          child: LoadingAnimationWidget.waveDots(
-            color: Colors.white,
-            size: 70,
-          ),
-        ),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            children: [
-              Expanded(
-                child: Container(),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Masuk Lewat Mana?',
-                      style: TextStyle(
-                          color: Colors.lightBlue[700],
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      'Pilih lewat scan QRCode atau masukkan kode group kamu.',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.lightBlue.shade900,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    side: BorderSide(
-                                        color: Colors.lightBlue.shade900)),
-                              ),
-                              onPressed: () async {
-                                await Permission.camera.request();
-                                String? cameraScanResult = await scanner.scan();
-                                if (cameraScanResult != null) {
-                                  await getGroup(cameraScanResult);
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: cameraScanResult ?? 'Failed');
-                                }
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(
-                                        width: 25, child: Icon(Icons.qr_code)),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'QR Code',
-                                      style: TextStyle(
-                                          color: Colors.lightBlue.shade900,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            Expanded(
+              child: Container(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Masuk Lewat Mana?',
+                    style: TextStyle(
+                        color: Colors.lightBlue[700],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Text(
+                    'Pilih lewat scan QRCode atau masukkan kode group kamu.',
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.lightBlue.shade900,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  side: BorderSide(
+                                      color: Colors.lightBlue.shade900)),
+                            ),
+                            onPressed: () async {
+                              await Permission.camera.request();
+                              String? cameraScanResult = await scanner.scan();
+                              if (cameraScanResult != null) {
+                                await getGroup(cameraScanResult);
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg: cameraScanResult ?? 'Failed');
+                              }
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                      width: 25, child: Icon(Icons.qr_code)),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'QR Code',
+                                    style: TextStyle(
+                                        color: Colors.lightBlue.shade900,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                onPrimary: Colors.lightBlue.shade900,
-                                shadowColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    side: BorderSide(
-                                        color: Colors.lightBlue.shade900)),
-                              ),
-                              onPressed: () => _enterCodeModal(context),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const SizedBox(
-                                        width: 25,
-                                        child: Icon(Icons.keyboard_outlined)),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Text(
-                                      'Ketik Kode',
-                                      style: TextStyle(
-                                          color: Colors.lightBlue.shade900,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.lightBlue.shade900,
+                              shadowColor: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  side: BorderSide(
+                                      color: Colors.lightBlue.shade900)),
+                            ),
+                            onPressed: () => _enterCodeModal(context),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                      width: 25,
+                                      child: Icon(Icons.keyboard_outlined)),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    'Ketik Kode',
+                                    style: TextStyle(
+                                        color: Colors.lightBlue.shade900,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(
-                height: 25,
-              )
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 25,
+            )
+          ],
         ),
       ),
     );

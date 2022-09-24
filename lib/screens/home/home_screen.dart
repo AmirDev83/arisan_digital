@@ -14,6 +14,7 @@ import 'package:arisan_digital/screens/settings/setting_screen.dart';
 import 'package:arisan_digital/screens/shuffle_screen.dart';
 import 'package:arisan_digital/utils/currency_format.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
+import 'package:arisan_digital/utils/loading_overlay.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 
 enum StatusAd { initial, loaded }
@@ -58,9 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
       );
 
   Future sendRemainder(int groupId) async {
-    context.loaderOverlay.show();
+    LoadingOverlay.show(context);
     ResponseModel? response = await _memberRepo.sendRemainder(groupId);
-    context.loaderOverlay.hide();
+
+    if (mounted) LoadingOverlay.hide(context);
     if (response == null) {
       // ignore: use_build_context_synchronously
       return CustomSnackbar.awesome(context,
@@ -116,186 +116,30 @@ class _HomeScreenState extends State<HomeScreen> {
         child: BlocListener<UpdateGroupCubit, UpdateGroupState>(
           listener: (context, state) {
             if (state.status == UpdateGroupStatus.loading) {
-              context.loaderOverlay.show();
+              LoadingOverlay.show(context);
             } else if (state.status == UpdateGroupStatus.success) {
-              context.loaderOverlay.hide();
+              LoadingOverlay.hide(context);
               CustomSnackbar.awesome(context,
                   message: state.message ?? '', type: ContentType.success);
               context
                   .read<GroupBloc>()
                   .add(const GroupFetched(isRefresh: true));
             } else {
-              context.loaderOverlay.hide();
+              LoadingOverlay.hide(context);
               CustomSnackbar.awesome(context,
                   message: state.message ?? '', type: ContentType.failure);
             }
           },
-          child: LoaderOverlay(
-            useDefaultLoading: false,
-            overlayOpacity: 0.6,
-            overlayWidget: Center(
-              child: LoadingAnimationWidget.waveDots(
-                color: Colors.white,
-                size: 70,
-              ),
-            ),
-            child: CustomScrollView(slivers: [
-              SliverAppBar(
-                  floating: true,
-                  automaticallyImplyLeading: false,
-                  elevation: 0,
-                  backgroundColor: Colors.blue[700],
-                  actions: [
-                    BlocBuilder<GroupBloc, GroupState>(
-                      builder: (context, stateGroup) {
-                        if (stateGroup.groups.isNotEmpty) {
-                          return BlocBuilder<SelectedGroupCubit,
-                              SelectedGroupState>(
-                            builder: (context, state) {
-                              int selectedIndex = state.selectedIndex;
-                              // Kondisi ketika ada user login di 2 device yang sama,
-                              // Yang satu menghapus groups,
-                              // Sedangkan yang satunya masih menyimpan data selected index
-                              if (state.selectedIndex >=
-                                  stateGroup.groups.length) {
-                                selectedIndex = 0;
-                                context
-                                    .read<SelectedGroupCubit>()
-                                    .setSelectedIndex(0);
-                              }
-                              return Row(
-                                children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (builder) {
-                                          return SettingScreen(
-                                            group: stateGroup
-                                                .groups[selectedIndex],
-                                          );
-                                        }));
-                                      },
-                                      icon: const Icon(Icons.settings)),
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (builder) {
-                                        return MemberScreen(
-                                          group:
-                                              stateGroup.groups[selectedIndex],
-                                        );
-                                      }));
-                                    },
-                                    icon: const Icon(
-                                        Icons.app_registration_rounded),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                        }
-                        return Row(
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (builder) {
-                                    return const SettingScreen();
-                                  }));
-                                },
-                                icon: const Icon(Icons.settings)),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-                  // title: const Text('Arisan Digital')
-                  title: SizedBox(
-                      height: 35,
-                      child: Image.asset('assets/images/arisan-white.png'))),
-              SliverList(
-                  delegate: SliverChildListDelegate([
-                Stack(
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 90,
-                      decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(25),
-                              bottomRight: Radius.circular(25)),
-                          color: Colors.blue[700]),
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (builder) {
-                              return const CreateGroupScreen();
-                            }));
-                          },
-                          child: Container(
-                              height: 30,
-                              width: 30,
-                              margin: const EdgeInsets.only(left: 15, top: 5),
-                              padding: const EdgeInsets.all(3),
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 7,
-                                      offset: const Offset(1, 3),
-                                    )
-                                  ],
-                                  color: Colors.blue[700]),
-                              child: const Icon(
-                                Icons.group_add,
-                                color: Colors.white,
-                              )),
-                        ),
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.only(top: 5),
-                            height: 30,
-                            child: BlocBuilder<GroupBloc, GroupState>(
-                              builder: (context, state) {
-                                if (state.status == GroupStatus.initial ||
-                                    state.status == GroupStatus.failure) {
-                                  return const ShimmerGroups();
-                                }
-
-                                if (state.groups.isEmpty) {
-                                  return const Padding(
-                                    padding: EdgeInsets.only(left: 15),
-                                    child: Text(
-                                      'Tambahkan group arisan baru!',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  );
-                                }
-                                return GroupList(
-                                  groups: state.groups,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    BlocBuilder<GroupBloc, GroupState>(
-                      builder: (context, stateGroup) {
-                        if (stateGroup.groups.isEmpty) {
-                          return Container();
-                        }
+          child: CustomScrollView(slivers: [
+            SliverAppBar(
+                floating: true,
+                automaticallyImplyLeading: false,
+                elevation: 0,
+                backgroundColor: Colors.blue[700],
+                actions: [
+                  BlocBuilder<GroupBloc, GroupState>(
+                    builder: (context, stateGroup) {
+                      if (stateGroup.groups.isNotEmpty) {
                         return BlocBuilder<SelectedGroupCubit,
                             SelectedGroupState>(
                           builder: (context, state) {
@@ -310,637 +154,772 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .read<SelectedGroupCubit>()
                                   .setSelectedIndex(0);
                             }
-                            GroupModel group = stateGroup.groups[selectedIndex];
-                            return Container(
-                              margin: const EdgeInsets.only(
-                                  top: 55, left: 15, right: 15),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 10),
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      blurRadius: 7,
-                                      offset: const Offset(1, 3),
-                                    )
-                                  ],
-                                  color: Colors.white),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Saldo Arisan',
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            "Rp ",
-                                            style: TextStyle(fontSize: 12),
-                                          ),
-                                          Text(
-                                            state.isShowBalance
-                                                ? currencyId
-                                                    .format(group.totalBalance)
-                                                : '**********',
-                                            style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () => context
-                                                .read<SelectedGroupCubit>()
-                                                .showBalance(selectedIndex),
-                                            child: Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 10),
-                                                child: Icon(state.isShowBalance
-                                                    ? Icons.visibility
-                                                    : Icons.visibility_off)),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  )),
-                                  GestureDetector(
-                                    onTap: () =>
-                                        _qrCodeDialog(group.code ?? ''),
-                                    child: SizedBox(
-                                        width: 50,
-                                        child: Image.network(
-                                            "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${group.code}&choe=UTF-8")),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-                statusAd == StatusAd.loaded
-                    ? Container(
-                        margin:
-                            const EdgeInsets.only(left: 15, right: 15, top: 15),
-                        alignment: Alignment.center,
-                        width: myBanner!.size.width.toDouble(),
-                        height: myBanner!.size.height.toDouble(),
-                        child: AdWidget(ad: myBanner!),
-                      )
-                    : Container(),
-              ])),
-              BlocBuilder<GroupBloc, GroupState>(
-                builder: (context, stateGroup) {
-                  if (stateGroup.groups.isEmpty) {
-                    return SliverList(delegate: SliverChildListDelegate([]));
-                  }
-                  return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
-                    builder: (context, state) {
-                      int selectedIndex = state.selectedIndex;
-                      // Kondisi ketika ada user login di 2 device yang sama,
-                      // Yang satu menghapus groups,
-                      // Sedangkan yang satunya masih menyimpan data selected index
-                      if (state.selectedIndex >= stateGroup.groups.length) {
-                        selectedIndex = 0;
-                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
-                      }
-                      GroupModel group = stateGroup.groups[selectedIndex];
-                      if ((group.lastPaidMembers ?? []).isEmpty) {
-                        return SliverList(
-                            delegate: SliverChildListDelegate([]));
-                      }
-                      return SliverList(
-                          delegate: SliverChildListDelegate([
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const Expanded(
-                                    child: Text(
-                                      'Terakhir Bayar',
-                                      style: TextStyle(
-                                        color: Colors.green,
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (builder) {
-                                        return MemberScreen(
-                                          group: group,
-                                        );
-                                      }));
-                                    },
-                                    child: Row(
-                                      children: const [
-                                        Text('Lihat Semua'),
-                                        Icon(Icons.chevron_right)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              for (MemberModel item
-                                  in (group.lastPaidMembers ?? []))
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                          width: 40,
-                                          child: item.gender == 'female'
-                                              ? Image.asset(
-                                                  "assets/images/icons/woman.png")
-                                              : Image.asset(
-                                                  "assets/images/icons/man.png")),
-                                      const SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                          child: Text(
-                                        item.name ?? '',
-                                        style: const TextStyle(fontSize: 13),
-                                      )),
-                                      Text(
-                                        "Rp${currencyId.format(group.dues ?? 0)}",
-                                        style: const TextStyle(
-                                            fontSize: 17,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                        )
-                      ]));
-                    },
-                  );
-                },
-              ),
-              BlocBuilder<GroupBloc, GroupState>(
-                builder: (context, stateGroup) {
-                  if (stateGroup.groups.isEmpty) {
-                    return SliverList(delegate: SliverChildListDelegate([]));
-                  }
-                  return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
-                    builder: (context, state) {
-                      int selectedIndex = state.selectedIndex;
-                      // Kondisi ketika ada user login di 2 device yang sama,
-                      // Yang satu menghapus groups,
-                      // Sedangkan yang satunya masih menyimpan data selected index
-                      if (state.selectedIndex >= stateGroup.groups.length) {
-                        selectedIndex = 0;
-                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
-                      }
-                      GroupModel group = stateGroup.groups[selectedIndex];
-                      return SliverList(
-                          delegate: SliverChildListDelegate([
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 15, left: 15, right: 15),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  blurRadius: 7,
-                                  offset: const Offset(1, 3),
-                                )
-                              ],
-                              color: Colors.white),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Belum Setor',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Rp ',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                        '-${currencyId.format(group.totalNotDues)}',
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.red),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )),
-                              GestureDetector(
-                                onTap: () => _showSendRemainderDialog(
-                                    context, group.id!),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 5),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                      border: Border.all(color: Colors.red)),
-                                  child: Row(
-                                    children: const [
-                                      Icon(
-                                        Icons.mail,
-                                        color: Colors.red,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        'Tagih',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.red),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ]));
-                    },
-                  );
-                },
-              ),
-              BlocBuilder<GroupBloc, GroupState>(
-                builder: (context, stateGroup) {
-                  if (stateGroup.groups.isEmpty) {
-                    return SliverList(delegate: SliverChildListDelegate([]));
-                  }
-                  return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
-                    builder: (context, state) {
-                      int selectedIndex = state.selectedIndex;
-                      // Kondisi ketika ada user login di 2 device yang sama,
-                      // Yang satu menghapus groups,
-                      // Sedangkan yang satunya masih menyimpan data selected index
-                      if (state.selectedIndex >= stateGroup.groups.length) {
-                        selectedIndex = 0;
-                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
-                      }
-                      GroupModel group = stateGroup.groups[selectedIndex];
-                      return SliverList(
-                          delegate: SliverChildListDelegate([
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 15, left: 15, right: 15),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  blurRadius: 7,
-                                  offset: const Offset(1, 3),
-                                )
-                              ],
-                              color: Colors.white),
-                          child: Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                      child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Tanggal Kocok Arisan',
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12),
-                                      ),
-                                      Text(
-                                        group.periodsType == 'weekly'
-                                            ? '(Mingguan)'
-                                            : group.periodsType == 'monthly'
-                                                ? '(Bulanan)'
-                                                : '(Tahunan)',
-                                        style: const TextStyle(
-                                            color: Colors.grey, fontSize: 12),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            group.periodsDateEn ?? '',
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                    ],
-                                  )),
-                                  GestureDetector(
-                                    onTap: () => _selectDate(context, group),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 3, horizontal: 5),
-                                      child: const Icon(
-                                        Icons.edit_calendar,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      primary: Colors.white,
-                                      onPrimary: Colors.lightBlue[700],
-                                      shadowColor: Colors.transparent,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                          side: BorderSide(
-                                              color:
-                                                  Colors.lightBlue.shade800)),
-                                    ),
+                            return Row(
+                              children: [
+                                IconButton(
                                     onPressed: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (builder) {
-                                        return HistoryScreen(
-                                          group: group,
+                                        return SettingScreen(
+                                          group:
+                                              stateGroup.groups[selectedIndex],
                                         );
                                       }));
                                     },
-                                    child: const Text('Lihat Riwayat')),
-                              )
-                            ],
+                                    icon: const Icon(Icons.settings)),
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (builder) {
+                                      return MemberScreen(
+                                        group: stateGroup.groups[selectedIndex],
+                                      );
+                                    }));
+                                  },
+                                  icon: const Icon(
+                                      Icons.app_registration_rounded),
+                                )
+                              ],
+                            );
+                          },
+                        );
+                      }
+                      return Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (builder) {
+                                  return const SettingScreen();
+                                }));
+                              },
+                              icon: const Icon(Icons.settings)),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+                // title: const Text('Arisan Digital')
+                title: SizedBox(
+                    height: 35,
+                    child: Image.asset('assets/images/arisan-white.png'))),
+            SliverList(
+                delegate: SliverChildListDelegate([
+              Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 90,
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(25),
+                            bottomRight: Radius.circular(25)),
+                        color: Colors.blue[700]),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return const CreateGroupScreen();
+                          }));
+                        },
+                        child: Container(
+                            height: 30,
+                            width: 30,
+                            margin: const EdgeInsets.only(left: 15, top: 5),
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white),
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 7,
+                                    offset: const Offset(1, 3),
+                                  )
+                                ],
+                                color: Colors.blue[700]),
+                            child: const Icon(
+                              Icons.group_add,
+                              color: Colors.white,
+                            )),
+                      ),
+                      Expanded(
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          margin: const EdgeInsets.only(top: 5),
+                          height: 30,
+                          child: BlocBuilder<GroupBloc, GroupState>(
+                            builder: (context, state) {
+                              if (state.status == GroupStatus.initial ||
+                                  state.status == GroupStatus.failure) {
+                                return const ShimmerGroups();
+                              }
+
+                              if (state.groups.isEmpty) {
+                                return const Padding(
+                                  padding: EdgeInsets.only(left: 15),
+                                  child: Text(
+                                    'Tambahkan group arisan baru!',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                              }
+                              return GroupList(
+                                groups: state.groups,
+                              );
+                            },
                           ),
                         ),
-                      ]));
-                    },
-                  );
-                },
-              ),
-              SliverList(
-                  delegate: SliverChildListDelegate([
-                Container(
-                  margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  width: MediaQuery.of(context).size.width,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/images/banner.jpg',
-                        fit: BoxFit.cover,
                       ),
+                    ],
+                  ),
+                  BlocBuilder<GroupBloc, GroupState>(
+                    builder: (context, stateGroup) {
+                      if (stateGroup.groups.isEmpty) {
+                        return Container();
+                      }
+                      return BlocBuilder<SelectedGroupCubit,
+                          SelectedGroupState>(
+                        builder: (context, state) {
+                          int selectedIndex = state.selectedIndex;
+                          // Kondisi ketika ada user login di 2 device yang sama,
+                          // Yang satu menghapus groups,
+                          // Sedangkan yang satunya masih menyimpan data selected index
+                          if (state.selectedIndex >= stateGroup.groups.length) {
+                            selectedIndex = 0;
+                            context
+                                .read<SelectedGroupCubit>()
+                                .setSelectedIndex(0);
+                          }
+                          GroupModel group = stateGroup.groups[selectedIndex];
+                          return Container(
+                            margin: const EdgeInsets.only(
+                                top: 55, left: 15, right: 15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 10),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    blurRadius: 7,
+                                    offset: const Offset(1, 3),
+                                  )
+                                ],
+                                color: Colors.white),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Saldo Arisan',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 12),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Rp ",
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                        Text(
+                                          state.isShowBalance
+                                              ? currencyId
+                                                  .format(group.totalBalance)
+                                              : '**********',
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () => context
+                                              .read<SelectedGroupCubit>()
+                                              .showBalance(selectedIndex),
+                                          child: Container(
+                                              margin: const EdgeInsets.only(
+                                                  left: 10),
+                                              child: Icon(state.isShowBalance
+                                                  ? Icons.visibility
+                                                  : Icons.visibility_off)),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                                GestureDetector(
+                                  onTap: () => _qrCodeDialog(group.code ?? ''),
+                                  child: SizedBox(
+                                      width: 50,
+                                      child: Image.network(
+                                          "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${group.code}&choe=UTF-8")),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              statusAd == StatusAd.loaded
+                  ? Container(
+                      margin:
+                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      alignment: Alignment.center,
+                      width: myBanner!.size.width.toDouble(),
+                      height: myBanner!.size.height.toDouble(),
+                      child: AdWidget(ad: myBanner!),
+                    )
+                  : Container(),
+            ])),
+            BlocBuilder<GroupBloc, GroupState>(
+              builder: (context, stateGroup) {
+                if (stateGroup.groups.isEmpty) {
+                  return SliverList(delegate: SliverChildListDelegate([]));
+                }
+                return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
+                  builder: (context, state) {
+                    int selectedIndex = state.selectedIndex;
+                    // Kondisi ketika ada user login di 2 device yang sama,
+                    // Yang satu menghapus groups,
+                    // Sedangkan yang satunya masih menyimpan data selected index
+                    if (state.selectedIndex >= stateGroup.groups.length) {
+                      selectedIndex = 0;
+                      context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                    }
+                    GroupModel group = stateGroup.groups[selectedIndex];
+                    if ((group.lastPaidMembers ?? []).isEmpty) {
+                      return SliverList(delegate: SliverChildListDelegate([]));
+                    }
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    'Terakhir Bayar',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (builder) {
+                                      return MemberScreen(
+                                        group: group,
+                                      );
+                                    }));
+                                  },
+                                  child: Row(
+                                    children: const [
+                                      Text('Lihat Semua'),
+                                      Icon(Icons.chevron_right)
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            for (MemberModel item
+                                in (group.lastPaidMembers ?? []))
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                        width: 40,
+                                        child: item.gender == 'female'
+                                            ? Image.asset(
+                                                "assets/images/icons/woman.png")
+                                            : Image.asset(
+                                                "assets/images/icons/man.png")),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                        child: Text(
+                                      item.name ?? '',
+                                      style: const TextStyle(fontSize: 13),
+                                    )),
+                                    Text(
+                                      "Rp${currencyId.format(group.dues ?? 0)}",
+                                      style: const TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w500),
+                                    )
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      )
+                    ]));
+                  },
+                );
+              },
+            ),
+            BlocBuilder<GroupBloc, GroupState>(
+              builder: (context, stateGroup) {
+                if (stateGroup.groups.isEmpty) {
+                  return SliverList(delegate: SliverChildListDelegate([]));
+                }
+                return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
+                  builder: (context, state) {
+                    int selectedIndex = state.selectedIndex;
+                    // Kondisi ketika ada user login di 2 device yang sama,
+                    // Yang satu menghapus groups,
+                    // Sedangkan yang satunya masih menyimpan data selected index
+                    if (state.selectedIndex >= stateGroup.groups.length) {
+                      selectedIndex = 0;
+                      context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                    }
+                    GroupModel group = stateGroup.groups[selectedIndex];
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 7,
+                                offset: const Offset(1, 3),
+                              )
+                            ],
+                            color: Colors.white),
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Belum Setor',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Rp ',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    Text(
+                                      '-${currencyId.format(group.totalNotDues)}',
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                            GestureDetector(
+                              onTap: () =>
+                                  _showSendRemainderDialog(context, group.id!),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 3, horizontal: 5),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.red)),
+                                child: Row(
+                                  children: const [
+                                    Icon(
+                                      Icons.mail,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Tagih',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.red),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]));
+                  },
+                );
+              },
+            ),
+            BlocBuilder<GroupBloc, GroupState>(
+              builder: (context, stateGroup) {
+                if (stateGroup.groups.isEmpty) {
+                  return SliverList(delegate: SliverChildListDelegate([]));
+                }
+                return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
+                  builder: (context, state) {
+                    int selectedIndex = state.selectedIndex;
+                    // Kondisi ketika ada user login di 2 device yang sama,
+                    // Yang satu menghapus groups,
+                    // Sedangkan yang satunya masih menyimpan data selected index
+                    if (state.selectedIndex >= stateGroup.groups.length) {
+                      selectedIndex = 0;
+                      context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                    }
+                    GroupModel group = stateGroup.groups[selectedIndex];
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 7,
+                                offset: const Offset(1, 3),
+                              )
+                            ],
+                            color: Colors.white),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Tanggal Kocok Arisan',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 12),
+                                    ),
+                                    Text(
+                                      group.periodsType == 'weekly'
+                                          ? '(Mingguan)'
+                                          : group.periodsType == 'monthly'
+                                              ? '(Bulanan)'
+                                              : '(Tahunan)',
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 12),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          group.periodsDateEn ?? '',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                  ],
+                                )),
+                                GestureDetector(
+                                  onTap: () => _selectDate(context, group),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 3, horizontal: 5),
+                                    child: const Icon(
+                                      Icons.edit_calendar,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.white,
+                                    onPrimary: Colors.lightBlue[700],
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        side: BorderSide(
+                                            color: Colors.lightBlue.shade800)),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (builder) {
+                                      return HistoryScreen(
+                                        group: group,
+                                      );
+                                    }));
+                                  },
+                                  child: const Text('Lihat Riwayat')),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]));
+                  },
+                );
+              },
+            ),
+            SliverList(
+                delegate: SliverChildListDelegate([
+              Container(
+                margin: const EdgeInsets.only(top: 15, left: 15, right: 15),
+                height: MediaQuery.of(context).size.height * 0.20,
+                width: MediaQuery.of(context).size.width,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/banner.jpg',
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-              ])),
-              BlocBuilder<GroupBloc, GroupState>(
-                builder: (context, stateGroup) {
-                  if (stateGroup.groups.isEmpty) {
-                    return SliverList(delegate: SliverChildListDelegate([]));
-                  }
-                  return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
-                    builder: (context, state) {
-                      int selectedIndex = state.selectedIndex;
-                      // Kondisi ketika ada user login di 2 device yang sama,
-                      // Yang satu menghapus groups,
-                      // Sedangkan yang satunya masih menyimpan data selected index
-                      if (state.selectedIndex >= stateGroup.groups.length) {
-                        selectedIndex = 0;
-                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
-                      }
-                      GroupModel group = stateGroup.groups[selectedIndex];
-                      return SliverList(
-                          delegate: SliverChildListDelegate([
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 15, left: 15, right: 15),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  blurRadius: 7,
-                                  offset: const Offset(1, 3),
-                                )
-                              ],
-                              color: Colors.white),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Info Group',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 12),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          group.notes ??
-                                              'Informasi group masih kosong!\nTombol edit untuk merubah.',
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              )),
-                              GestureDetector(
-                                onTap: () => _editNotesModal(context, group),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 5),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: Colors.grey,
-                                  ),
-                                ),
+              ),
+            ])),
+            BlocBuilder<GroupBloc, GroupState>(
+              builder: (context, stateGroup) {
+                if (stateGroup.groups.isEmpty) {
+                  return SliverList(delegate: SliverChildListDelegate([]));
+                }
+                return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
+                  builder: (context, state) {
+                    int selectedIndex = state.selectedIndex;
+                    // Kondisi ketika ada user login di 2 device yang sama,
+                    // Yang satu menghapus groups,
+                    // Sedangkan yang satunya masih menyimpan data selected index
+                    if (state.selectedIndex >= stateGroup.groups.length) {
+                      selectedIndex = 0;
+                      context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                    }
+                    GroupModel group = stateGroup.groups[selectedIndex];
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 7,
+                                offset: const Offset(1, 3),
                               )
                             ],
-                          ),
-                        ),
-                      ]));
-                    },
-                  );
-                },
-              ),
-              BlocBuilder<GroupBloc, GroupState>(
-                builder: (context, stateGroup) {
-                  if (stateGroup.groups.isEmpty) {
-                    return SliverList(delegate: SliverChildListDelegate([]));
-                  }
-                  return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
-                    builder: (context, state) {
-                      int selectedIndex = state.selectedIndex;
-                      // Kondisi ketika ada user login di 2 device yang sama,
-                      // Yang satu menghapus groups,
-                      // Sedangkan yang satunya masih menyimpan data selected index
-                      if (state.selectedIndex >= stateGroup.groups.length) {
-                        selectedIndex = 0;
-                        context.read<SelectedGroupCubit>().setSelectedIndex(0);
-                      }
-                      GroupModel group = stateGroup.groups[selectedIndex];
-                      return SliverList(
-                          delegate: SliverChildListDelegate([
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 15, left: 15, right: 15),
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: group.isShuffle!
-                                    ? null
-                                    : Colors.grey.shade400,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
+                            color: Colors.white),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Info Group',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        group.notes ??
+                                            'Informasi group masih kosong!\nTombol edit untuk merubah.',
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )),
+                            GestureDetector(
+                              onTap: () => _editNotesModal(context, group),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 3, horizontal: 5),
+                                child: const Icon(
+                                  Icons.edit,
+                                  color: Colors.grey,
                                 ),
                               ),
-                              onPressed: () {
-                                if (group.isShuffle!) {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (builder) {
-                                    return ShuffleScreen(
-                                      members: group.members,
-                                      group: group,
-                                    );
-                                  }));
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          'Mohon pastikan semua status member sudah diupdate!');
-                                }
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: Text('Kocok Arisan Sekarang!'),
-                              )),
-                        )
-                      ]));
-                    },
-                  );
-                },
-              ),
-              SliverList(
-                  delegate: SliverChildListDelegate([
-                const SizedBox(
-                  height: 50,
-                )
-              ])),
-              BlocBuilder<GroupBloc, GroupState>(
-                  builder: (context, stateGroup) {
-                if (stateGroup.status == GroupStatus.success &&
-                    stateGroup.groups.isEmpty) {
-                  return SliverList(
-                      delegate: SliverChildListDelegate([
-                    // Center(
-                    //     child: SizedBox(
-                    //         width: 250,
-                    //         child:
-                    //             Image.asset('assets/images/icons/group.png'))),
-                    // const SizedBox(height: 20),
-                    Text('Selamat Datang!!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.grey.shade800,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25)),
-                    Text('Yuk mulai bikin group barumu sekarang.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey.shade800,
-                        )),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          top: 15, left: 15, right: 15, bottom: 25),
-                      child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.blue.shade700,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (builder) {
-                              return const CreateGroupScreen();
-                            }));
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Text('Tambah Group'),
-                          )),
-                    )
-                  ]));
+                            )
+                          ],
+                        ),
+                      ),
+                    ]));
+                  },
+                );
+              },
+            ),
+            BlocBuilder<GroupBloc, GroupState>(
+              builder: (context, stateGroup) {
+                if (stateGroup.groups.isEmpty) {
+                  return SliverList(delegate: SliverChildListDelegate([]));
                 }
-                return SliverList(delegate: SliverChildListDelegate([]));
-              })
-            ]),
-          ),
+                return BlocBuilder<SelectedGroupCubit, SelectedGroupState>(
+                  builder: (context, state) {
+                    int selectedIndex = state.selectedIndex;
+                    // Kondisi ketika ada user login di 2 device yang sama,
+                    // Yang satu menghapus groups,
+                    // Sedangkan yang satunya masih menyimpan data selected index
+                    if (state.selectedIndex >= stateGroup.groups.length) {
+                      selectedIndex = 0;
+                      context.read<SelectedGroupCubit>().setSelectedIndex(0);
+                    }
+                    GroupModel group = stateGroup.groups[selectedIndex];
+                    return SliverList(
+                        delegate: SliverChildListDelegate([
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top: 15, left: 15, right: 15),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: group.isShuffle!
+                                  ? null
+                                  : Colors.grey.shade400,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (group.isShuffle!) {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (builder) {
+                                  return ShuffleScreen(
+                                    members: group.members,
+                                    group: group,
+                                  );
+                                }));
+                              } else {
+                                Fluttertoast.showToast(
+                                    msg:
+                                        'Mohon pastikan semua status member sudah diupdate!');
+                              }
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Text('Kocok Arisan Sekarang!'),
+                            )),
+                      )
+                    ]));
+                  },
+                );
+              },
+            ),
+            SliverList(
+                delegate: SliverChildListDelegate([
+              const SizedBox(
+                height: 50,
+              )
+            ])),
+            BlocBuilder<GroupBloc, GroupState>(builder: (context, stateGroup) {
+              if (stateGroup.status == GroupStatus.success &&
+                  stateGroup.groups.isEmpty) {
+                return SliverList(
+                    delegate: SliverChildListDelegate([
+                  // Center(
+                  //     child: SizedBox(
+                  //         width: 250,
+                  //         child:
+                  //             Image.asset('assets/images/icons/group.png'))),
+                  // const SizedBox(height: 20),
+                  Text('Selamat Datang!!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25)),
+                  Text('Yuk mulai bikin group barumu sekarang.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade800,
+                      )),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        top: 15, left: 15, right: 15, bottom: 25),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue.shade700,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (builder) {
+                            return const CreateGroupScreen();
+                          }));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text('Tambah Group'),
+                        )),
+                  )
+                ]));
+              }
+              return SliverList(delegate: SliverChildListDelegate([]));
+            })
+          ]),
         ),
       ),
     );

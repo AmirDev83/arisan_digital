@@ -7,11 +7,10 @@ import 'package:arisan_digital/screens/groups/update_group_screen.dart';
 import 'package:arisan_digital/screens/settings/about_screen.dart';
 import 'package:arisan_digital/screens/starting_screen.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
+import 'package:arisan_digital/utils/loading_overlay.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -46,9 +45,9 @@ class _SettingScreenState extends State<SettingScreen> {
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthLoading) {
-              context.loaderOverlay.show();
+              LoadingOverlay.show(context);
             } else if (state is AuthLogout) {
-              context.loaderOverlay.hide();
+              LoadingOverlay.hide(context);
               if (state.authStatus == AuthStatus.unauthenticated) {
                 context.read<SelectedGroupCubit>().setSelectedIndex(0);
                 Navigator.pushAndRemoveUntil<void>(
@@ -60,157 +59,145 @@ class _SettingScreenState extends State<SettingScreen> {
                 );
               }
             } else {
-              context.loaderOverlay.hide();
+              LoadingOverlay.hide(context);
             }
           },
         ),
         BlocListener<DeleteGroupCubit, DeleteGroupState>(
             listener: (context, state) {
           if (state.status == DeleteGroupStatus.loading) {
-            context.loaderOverlay.show();
+            LoadingOverlay.show(context);
           } else if (state.status == DeleteGroupStatus.success) {
-            context.loaderOverlay.hide();
+            LoadingOverlay.hide(context);
             CustomSnackbar.awesome(context,
                 message: state.message ?? '', type: ContentType.success);
             context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
             context.read<SelectedGroupCubit>().setSelectedIndex(0);
             Navigator.pop(context);
           } else {
-            context.loaderOverlay.hide();
+            LoadingOverlay.hide(context);
           }
         }),
       ],
-      child: LoaderOverlay(
-        useDefaultLoading: false,
-        overlayColor: Colors.blue.shade700,
-        overlayOpacity: 1,
-        overlayWidget: Center(
-          child: LoadingAnimationWidget.waveDots(
-            color: Colors.white,
-            size: 70,
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: CustomScrollView(
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverAppBar(
-                    floating: true,
-                    iconTheme: IconThemeData(color: Colors.grey.shade300),
-                    titleTextStyle: TextStyle(
-                        color: Colors.lightBlue.shade800,
-                        fontWeight: FontWeight.w500),
-                    backgroundColor: Colors.white,
-                    centerTitle: true,
-                    elevation: 0,
-                    title: const Text('Pengaturan')),
-                SliverList(
-                    delegate: SliverChildListDelegate([
-                  Column(
-                    children: [
-                      BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          if (state is AuthUser) {
-                            if (state.authStatus == AuthStatus.authenticated) {
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: ClipOval(
-                                        child: Image.network(
-                                          state.user?.photoUrl ?? '',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      )),
-                                ),
-                                title: Text(state.user?.name ?? ''),
-                                subtitle: Text(state.user?.email ?? ''),
-                              );
-                            }
-                          }
-                          return Container();
-                        },
-                      ),
-                      group != null
-                          ? ListTile(
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (builder) {
-                                  return UpdateGroupScreen(
-                                    group: group,
-                                  );
-                                }));
-                              },
-                              leading: Icon(
-                                Icons.edit_outlined,
-                                color: Colors.blue.shade700,
-                              ),
-                              trailing: const Icon(Icons.chevron_right),
-                              title: const Text('Edit Group'),
-                            )
-                          : Container(),
-                      group != null
-                          ? ListTile(
-                              onTap: () => _showDeleteDialog(context),
-                              leading: Icon(
-                                Icons.delete_outline,
-                                color: Colors.blue.shade700,
-                              ),
-                              trailing: const Icon(Icons.chevron_right),
-                              title: Text('Hapus group : ${group!.name}'),
-                            )
-                          : Container(),
-                      ListTile(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body:
+            CustomScrollView(physics: const BouncingScrollPhysics(), slivers: [
+          SliverAppBar(
+              floating: true,
+              iconTheme: IconThemeData(color: Colors.grey.shade300),
+              titleTextStyle: TextStyle(
+                  color: Colors.lightBlue.shade800,
+                  fontWeight: FontWeight.w500),
+              backgroundColor: Colors.white,
+              centerTitle: true,
+              elevation: 0,
+              title: const Text('Pengaturan')),
+          SliverList(
+              delegate: SliverChildListDelegate([
+            Column(
+              children: [
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthUser) {
+                      if (state.authStatus == AuthStatus.authenticated) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: ClipOval(
+                                  child: Image.network(
+                                    state.user?.photoUrl ?? '',
+                                    fit: BoxFit.cover,
+                                  ),
+                                )),
+                          ),
+                          title: Text(state.user?.name ?? ''),
+                          subtitle: Text(state.user?.email ?? ''),
+                        );
+                      }
+                    }
+                    return Container();
+                  },
+                ),
+                group != null
+                    ? ListTile(
                         onTap: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (builder) {
-                            return const AboutScreen();
+                            return UpdateGroupScreen(
+                              group: group,
+                            );
                           }));
                         },
                         leading: Icon(
-                          Icons.info_outline,
+                          Icons.edit_outlined,
                           color: Colors.blue.shade700,
                         ),
                         trailing: const Icon(Icons.chevron_right),
-                        title: const Text('Tentang Aplikasi'),
-                      ),
-                      ListTile(
-                        onTap: () => _launchUrl(
-                            'https://docs.google.com/forms/d/e/1FAIpQLSfvdDOqIRCiuGxuqVJ4hMuV_mrjPqfTksbqmIgHgGN_aMGl2A/viewform?usp=sf_link'),
+                        title: const Text('Edit Group'),
+                      )
+                    : Container(),
+                group != null
+                    ? ListTile(
+                        onTap: () => _showDeleteDialog(context),
                         leading: Icon(
-                          Icons.comment_outlined,
+                          Icons.delete_outline,
                           color: Colors.blue.shade700,
                         ),
                         trailing: const Icon(Icons.chevron_right),
-                        title: const Text('Kritik dan Saran'),
-                      ),
-                      ListTile(
-                        onTap: () => _launchUrl(
-                            'https://play.google.com/store/apps/details?id=com.caraguna.arisan.digital'),
-                        leading: Icon(
-                          Icons.star_outline,
-                          color: Colors.blue.shade700,
-                        ),
-                        trailing: const Icon(Icons.chevron_right),
-                        title: const Text('Review Aplikasi'),
-                      ),
-                      ListTile(
-                        onTap: () => _showLogoutDialog(context),
-                        trailing: const Icon(Icons.chevron_right),
-                        leading: Icon(
-                          Icons.logout_outlined,
-                          color: Colors.blue.shade700,
-                        ),
-                        title: const Text('Keluar'),
-                      ),
-                    ],
-                  )
-                ])),
-                SliverList(delegate: SliverChildListDelegate([])),
-              ]),
-        ),
+                        title: Text('Hapus group : ${group!.name}'),
+                      )
+                    : Container(),
+                ListTile(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (builder) {
+                      return const AboutScreen();
+                    }));
+                  },
+                  leading: Icon(
+                    Icons.info_outline,
+                    color: Colors.blue.shade700,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  title: const Text('Tentang Aplikasi'),
+                ),
+                ListTile(
+                  onTap: () => _launchUrl(
+                      'https://docs.google.com/forms/d/e/1FAIpQLSfvdDOqIRCiuGxuqVJ4hMuV_mrjPqfTksbqmIgHgGN_aMGl2A/viewform?usp=sf_link'),
+                  leading: Icon(
+                    Icons.comment_outlined,
+                    color: Colors.blue.shade700,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  title: const Text('Kritik dan Saran'),
+                ),
+                ListTile(
+                  onTap: () => _launchUrl(
+                      'https://play.google.com/store/apps/details?id=com.caraguna.arisan.digital'),
+                  leading: Icon(
+                    Icons.star_outline,
+                    color: Colors.blue.shade700,
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  title: const Text('Review Aplikasi'),
+                ),
+                ListTile(
+                  onTap: () => _showLogoutDialog(context),
+                  trailing: const Icon(Icons.chevron_right),
+                  leading: Icon(
+                    Icons.logout_outlined,
+                    color: Colors.blue.shade700,
+                  ),
+                  title: const Text('Keluar'),
+                ),
+              ],
+            )
+          ])),
+          SliverList(delegate: SliverChildListDelegate([])),
+        ]),
       ),
     );
   }

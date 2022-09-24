@@ -1,11 +1,14 @@
+import 'package:arisan_digital/models/response_model.dart';
 import 'package:arisan_digital/repositories/auth_repository.dart';
 import 'package:arisan_digital/screens/auth/register_screen.dart';
 import 'package:arisan_digital/screens/home/home_screen.dart';
+import 'package:arisan_digital/utils/custom_snackbar.dart';
+import 'package:arisan_digital/utils/loading_overlay.dart';
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 final GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
@@ -25,21 +28,119 @@ class _LoginScreenState extends State<LoginScreen> {
   GoogleSignInAccount? _currentUser;
   final AuthRepository _authRepo = AuthRepository();
 
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailResetPasswordController =
+      TextEditingController();
+  final TextEditingController _emailResendVerificationController =
+      TextEditingController();
+
   bool isObscure = true;
 
-  @override
-  void initState() {
-    _googleSignIn.onCurrentUserChanged.listen((account) {
-      setState(() {
-        _currentUser = account;
-      });
-    });
-    _googleSignIn.signInSilently();
-    super.initState();
+  final _formLoginKey = GlobalKey<FormState>();
+
+  Future _loginManual() async {
+    if (!_formLoginKey.currentState!.validate()) return null;
+    LoadingOverlay.show(context);
+    try {
+      ResponseModel? response = await _authRepo.loginManual(
+          email: _emailController.text, password: _passwordController.text);
+      if (response == null) {
+        return;
+      }
+
+      if (response.status == 'unverified') {
+        _resendVerificationModal(_emailController.text,
+            message: response.message);
+      }
+
+      if (response.status == 'failed') {
+        Fluttertoast.showToast(msg: response.message ?? '');
+      }
+
+      if (response.status == 'success') {
+        if (mounted) {
+          LoadingOverlay.hide(context);
+        }
+        routeHomeScreen();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+
+    if (mounted) {
+      LoadingOverlay.hide(context);
+    }
   }
 
+  Future _resetPassword() async {
+    LoadingOverlay.show(context);
+    try {
+      ResponseModel? response = await _authRepo.resetPassword(
+          email: _emailResetPasswordController.text);
+      if (response == null) {
+        return;
+      }
+
+      if (response.status == 'failed') {
+        // ignore: use_build_context_synchronously
+        CustomSnackbar.awesome(context,
+            message: response.message, type: ContentType.failure);
+      }
+
+      if (response.status == 'success') {
+        // ignore: use_build_context_synchronously
+        CustomSnackbar.awesome(context,
+            message: response.message, type: ContentType.success);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+
+    if (mounted) {
+      LoadingOverlay.hide(context);
+    }
+  }
+
+  Future _resendVerification() async {
+    if (!_formLoginKey.currentState!.validate()) return null;
+    LoadingOverlay.show(context);
+    try {
+      ResponseModel? response = await _authRepo.resendVerification(
+          email: _emailResendVerificationController.text);
+      if (response == null) {
+        return;
+      }
+
+      if (response.status == 'failed') {
+        // ignore: use_build_context_synchronously
+        CustomSnackbar.awesome(context,
+            message: response.message, type: ContentType.failure);
+      }
+
+      if (response.status == 'success') {
+        // ignore: use_build_context_synchronously
+        CustomSnackbar.awesome(context,
+            message: response.message, type: ContentType.success);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+
+    if (mounted) {
+      LoadingOverlay.hide(context);
+    }
+  }
+
+  // Google Sign In
   Future<void> _handleSignIn() async {
-    context.loaderOverlay.show();
+    LoadingOverlay.show(context);
     try {
       _currentUser = await _googleSignIn.signIn();
 
@@ -50,7 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
             photoUrl: _currentUser?.photoUrl,
             googleId: _currentUser?.id);
         if (token != null) {
-          context.loaderOverlay.hide();
+          // ignore: use_build_context_synchronously
+          LoadingOverlay.hide(context);
           routeHomeScreen();
         }
       }
@@ -60,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
     if (mounted) {
-      context.loaderOverlay.hide();
+      LoadingOverlay.hide(context);
     }
   }
 
@@ -71,6 +173,17 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (BuildContext context) => const HomeScreen()),
       ModalRoute.withName('/home-screen'),
     );
+  }
+
+  @override
+  void initState() {
+    _googleSignIn.onCurrentUserChanged.listen((account) {
+      setState(() {
+        _currentUser = account;
+      });
+    });
+    _googleSignIn.signInSilently();
+    super.initState();
   }
 
   @override
@@ -91,14 +204,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-      body: LoaderOverlay(
-        useDefaultLoading: false,
-        overlayWidget: Center(
-          child: LoadingAnimationWidget.waveDots(
-            color: Colors.white,
-            size: 70,
-          ),
-        ),
+      body: Form(
+        key: _formLoginKey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(15),
           child: Column(
@@ -135,22 +242,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextFormField(
+                controller: _emailController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Email tidak boleh kosong.';
+                  }
+                  return null;
+                },
                 decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue.shade700),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
                     hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
-                    fillColor: Colors.grey.shade300,
+                    fillColor: Colors.grey.shade200,
                     hintText: 'Email...'),
               ),
               const SizedBox(
@@ -167,6 +269,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextFormField(
+                controller: _passwordController,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Password tidak boleh kosong.';
+                  }
+                  return null;
+                },
                 obscureText: isObscure,
                 decoration: InputDecoration(
                     suffixIcon: IconButton(
@@ -178,21 +287,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.blue.shade700),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
                     hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
-                    fillColor: Colors.grey.shade300,
+                    fillColor: Colors.grey.shade200,
                     hintText: 'Password...'),
               ),
               const SizedBox(
@@ -232,7 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               shape: const StadiumBorder()),
-                          onPressed: () {},
+                          onPressed: () => _loginManual(),
                           child: const Padding(
                             padding: EdgeInsets.all(15.0),
                             child: Text(
@@ -285,10 +382,180 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: GestureDetector(
+                    onTap: () => _resetPasswordModal(),
+                    child: Center(
+                      child: Text(
+                        'Lupa Password? Reset Disini.',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade700),
+                      ),
+                    )),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _resetPasswordModal() {
+    return showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15))),
+            child: Wrap(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Reset Password',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    const Text(
+                      'Masukkan email yang ingin kamu reset passwordnya.',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, right: 5),
+                        child: TextField(
+                          controller: _emailResetPasswordController,
+                          decoration: const InputDecoration(
+                              labelStyle: TextStyle(fontSize: 14),
+                              labelText: "Email"),
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Submit'),
+                        onPressed: () async {
+                          if (_emailResetPasswordController.text != '') {
+                            Navigator.pop(context);
+                            await _resetPassword();
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Email tidak boleh kosong');
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _resendVerificationModal(String email, {String? message}) {
+    _emailResendVerificationController.text = email;
+    return showModalBottomSheet<void>(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15))),
+            child: Wrap(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Verifikasi Email',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    ),
+                    message != null
+                        ? Container(
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                                color: Colors.green.shade300,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Text(
+                              message,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.white),
+                            ),
+                          )
+                        : Container(),
+                    const Text(
+                      'Masukkan email yang ingin diverifikasi ulang.',
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(left: 5, right: 5),
+                        child: TextField(
+                          controller: _emailResendVerificationController,
+                          decoration: const InputDecoration(
+                              labelStyle: TextStyle(fontSize: 14),
+                              labelText: "Email"),
+                        )),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                        child: const Text('Submit'),
+                        onPressed: () async {
+                          if (_emailResendVerificationController.text != '') {
+                            Navigator.pop(context);
+                            await _resendVerification();
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: 'Email tidak boleh kosong');
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

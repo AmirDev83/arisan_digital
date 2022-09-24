@@ -7,12 +7,11 @@ import 'package:arisan_digital/models/group_model.dart';
 import 'package:arisan_digital/models/member_model.dart';
 import 'package:arisan_digital/utils/custom_snackbar.dart';
 import 'package:arisan_digital/utils/date_config.dart';
+import 'package:arisan_digital/utils/loading_overlay.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ShuffleScreen extends StatefulWidget {
   final List<MemberModel>? members;
@@ -86,15 +85,15 @@ class _ShuffleScreenState extends State<ShuffleScreen>
       listener: (context, state) {
         if (state is ShuffleDataState) {
           if (state.shuffleStatus == ShuffleStatus.loading) {
-            context.loaderOverlay.show();
+            LoadingOverlay.show(context);
           } else if (state.shuffleStatus == ShuffleStatus.success) {
-            context.loaderOverlay.hide();
+            LoadingOverlay.hide(context);
             CustomSnackbar.awesome(context,
                 message: state.message ?? '', type: ContentType.success);
             context.read<GroupBloc>().add(const GroupFetched(isRefresh: true));
             Navigator.pop(context);
           } else {
-            context.loaderOverlay.hide();
+            LoadingOverlay.hide(context);
             CustomSnackbar.awesome(context,
                 message: state.message ?? '', type: ContentType.failure);
           }
@@ -111,185 +110,175 @@ class _ShuffleScreenState extends State<ShuffleScreen>
             centerTitle: true,
             elevation: 0,
             title: const Text('')),
-        body: LoaderOverlay(
-          useDefaultLoading: false,
-          overlayOpacity: 0.6,
-          overlayWidget: Center(
-            child: LoadingAnimationWidget.waveDots(
-              color: Colors.white,
-              size: 70,
-            ),
-          ),
-          child: Column(
-            children: [
-              Expanded(
-                flex: 10,
-                child: GestureDetector(
-                  onTap: () {
-                    if (isInit) {
-                      startShuffle();
-                    }
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.height,
-                    decoration: BoxDecoration(
-                        color: winner == null
-                            ? Colors.lightBlue.shade800
-                            : Colors.lightGreen.shade800,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(50),
-                            bottomRight: Radius.circular(50))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          winner == null
-                              ? 'Kocok Sekarang!'
-                              : 'Selamat Kepada\n🎉🎉🎉\n${winner!.name}',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          winner == null
-                              ? isInit
-                                  ? 'Tap untuk memulai mengocok!'
-                                  : 'Mohon tunggu...'
-                              : 'Telah memenangkan arisan hari ini.',
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 15),
-                        ),
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        winner == null
-                            ? SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                child: Image.asset(
-                                    "assets/images/icons/shuffle.png"),
-                              )
-                            : Stack(
-                                children: [
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    child: Image.asset(
-                                        "assets/images/icons/trophy.png"),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.bottomLeft,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.2,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    child: Image.asset(
-                                        "assets/images/icons/trophy-circle.png"),
-                                  )
-                                ],
-                              ),
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        // winner == null
-                        //     ? Container(
-                        //         margin: const EdgeInsets.symmetric(horizontal: 25),
-                        //         child: LinearProgressIndicator(
-                        //           minHeight: 25,
-                        //           color: Colors.white,
-                        //           backgroundColor: Colors.grey,
-                        //           value: controller.value,
-                        //           semanticsLabel: 'Linear progress indicator',
-                        //         ),
-                        //       )
-                        //     : Container(),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
+        body: Column(
+          children: [
+            Expanded(
+              flex: 10,
+              child: GestureDetector(
+                onTap: () {
+                  if (isInit) {
+                    startShuffle();
+                  }
+                },
                 child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
+                  width: MediaQuery.of(context).size.height,
+                  decoration: BoxDecoration(
+                      color: winner == null
+                          ? Colors.lightBlue.shade800
+                          : Colors.lightGreen.shade800,
+                      borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(50),
+                          bottomRight: Radius.circular(50))),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Text(
+                        winner == null
+                            ? 'Kocok Sekarang!'
+                            : 'Selamat Kepada\n🎉🎉🎉\n${winner!.name}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        winner == null
+                            ? isInit
+                                ? 'Tap untuk memulai mengocok!'
+                                : 'Mohon tunggu...'
+                            : 'Telah memenangkan arisan hari ini.',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
                       winner == null
-                          ? Expanded(
-                              child: LinearProgressIndicator(
-                              minHeight: 25,
-                              color: Colors.lightBlue.shade800,
-                              backgroundColor: Colors.grey.shade300,
-                              value: controller.value,
-                              semanticsLabel: 'Linear progress indicator',
-                            ))
-                          : Container(),
-                      winner != null
-                          ? Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.white,
-                                  onPrimary: winner == null
-                                      ? Colors.lightBlue.shade900
-                                      : Colors.lightGreen.shade900,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      side: BorderSide(
-                                          color: winner == null
-                                              ? Colors.lightBlue.shade900
-                                              : Colors.lightGreen.shade900)),
+                          ? SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: Image.asset(
+                                  "assets/images/icons/shuffle.png"),
+                            )
+                          : Stack(
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: Image.asset(
+                                      "assets/images/icons/trophy.png"),
                                 ),
-                                onPressed: () => startShuffle(),
-                                child: const Text('Ulangi'),
-                              ),
-                            )
-                          : Container(),
-                      winner != null
-                          ? const SizedBox(
-                              width: 10,
-                            )
-                          : Container(),
-                      winner != null
-                          ? Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: winner == null
-                                      ? Colors.lightBlue.shade800
-                                      : Colors.lightGreen.shade900,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  context
-                                      .read<ShuffleCubit>()
-                                      .saveShuffleResult(ArisanHistoryModel(
-                                        date: DateConfig.dateToString(
-                                            DateTime.now()),
-                                        notes: '',
-                                        winner: MemberModel(
-                                          id: winner!.id,
-                                          group: widget.group,
-                                        ),
-                                      ));
-                                },
-                                child: const Text('Simpan'),
-                              ),
-                            )
-                          : Container()
+                                Container(
+                                  alignment: Alignment.bottomLeft,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.2,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: Image.asset(
+                                      "assets/images/icons/trophy-circle.png"),
+                                )
+                              ],
+                            ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      // winner == null
+                      //     ? Container(
+                      //         margin: const EdgeInsets.symmetric(horizontal: 25),
+                      //         child: LinearProgressIndicator(
+                      //           minHeight: 25,
+                      //           color: Colors.white,
+                      //           backgroundColor: Colors.grey,
+                      //           value: controller.value,
+                      //           semanticsLabel: 'Linear progress indicator',
+                      //         ),
+                      //       )
+                      //     : Container(),
                     ],
                   ),
                 ),
-              )
-            ],
-          ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    winner == null
+                        ? Expanded(
+                            child: LinearProgressIndicator(
+                            minHeight: 25,
+                            color: Colors.lightBlue.shade800,
+                            backgroundColor: Colors.grey.shade300,
+                            value: controller.value,
+                            semanticsLabel: 'Linear progress indicator',
+                          ))
+                        : Container(),
+                    winner != null
+                        ? Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.white,
+                                onPrimary: winner == null
+                                    ? Colors.lightBlue.shade900
+                                    : Colors.lightGreen.shade900,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    side: BorderSide(
+                                        color: winner == null
+                                            ? Colors.lightBlue.shade900
+                                            : Colors.lightGreen.shade900)),
+                              ),
+                              onPressed: () => startShuffle(),
+                              child: const Text('Ulangi'),
+                            ),
+                          )
+                        : Container(),
+                    winner != null
+                        ? const SizedBox(
+                            width: 10,
+                          )
+                        : Container(),
+                    winner != null
+                        ? Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: winner == null
+                                    ? Colors.lightBlue.shade800
+                                    : Colors.lightGreen.shade900,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                              onPressed: () {
+                                context
+                                    .read<ShuffleCubit>()
+                                    .saveShuffleResult(ArisanHistoryModel(
+                                      date: DateConfig.dateToString(
+                                          DateTime.now()),
+                                      notes: '',
+                                      winner: MemberModel(
+                                        id: winner!.id,
+                                        group: widget.group,
+                                      ),
+                                    ));
+                              },
+                              child: const Text('Simpan'),
+                            ),
+                          )
+                        : Container()
+                  ],
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );

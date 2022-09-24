@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:arisan_digital/models/response_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -35,6 +36,108 @@ class AuthRepository {
           setToken(token);
         }
         return token;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> loginManual({String? email, String? password}) async {
+    try {
+      final response = await http.post(Uri.parse('$_baseURL/login-manual'),
+          body: {
+            'email': email,
+            'password': password,
+            'device_name': 'mobile'
+          });
+
+      // Error handling
+      if (response.statusCode == 200) {
+        ResponseModel responseModel =
+            ResponseModel.fromJson(json.decode(response.body));
+        if (responseModel.status == 'success') {
+          var token = json.decode(response.body)['data']['token'];
+          if (token != null) {
+            setToken(token);
+          }
+        }
+        return responseModel;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> register(
+      {String? name,
+      String? email,
+      String? password,
+      String? passwordConfirmation}) async {
+    try {
+      final response = await http.post(Uri.parse('$_baseURL/register'), body: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      });
+
+      // Error handling
+      if (response.statusCode == 200) {
+        ResponseModel responseModel =
+            ResponseModel.fromJson(json.decode(response.body));
+        return responseModel;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> resendVerification({
+    String? email,
+  }) async {
+    try {
+      final response =
+          await http.post(Uri.parse('$_baseURL/resend-verification'), body: {
+        'email': email,
+      });
+
+      // Error handling
+      if (response.statusCode == 200) {
+        ResponseModel responseModel =
+            ResponseModel.fromJson(json.decode(response.body));
+        return responseModel;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
+
+  Future<ResponseModel?> resetPassword({
+    String? email,
+  }) async {
+    try {
+      final response =
+          await http.post(Uri.parse('$_baseURL/reset-password'), body: {
+        'email': email,
+      });
+
+      // Error handling
+      if (response.statusCode == 200) {
+        ResponseModel responseModel =
+            ResponseModel.fromJson(json.decode(response.body));
+        return responseModel;
       }
     } catch (e) {
       if (kDebugMode) {

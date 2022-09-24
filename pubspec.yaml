@@ -3,7 +3,7 @@ description: Arisan Digital.
 
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=2.17.3 <3.0.0"
@@ -18,7 +18,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   google_sign_in: ^5.4.1
   loading_animation_widget: ^1.2.0+3
-  loader_overlay: ^2.0.10
+  overlay_loading_progress: ^1.0.0
   upgrader: ^4.6.1
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
