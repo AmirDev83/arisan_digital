@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 final GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
     'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
+    // 'https://www.googleapis.com/auth/contacts.readonly',
   ],
 );
 
